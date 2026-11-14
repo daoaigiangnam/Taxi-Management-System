@@ -145,20 +145,23 @@ flowchart TD
 
 ## 5. Kiến trúc Module gắn với yêu cầu KPMG
 
+Danh mục 10 Module trong tài liệu này được chuẩn hóa theo tài liệu **03 — Kiến trúc phân rã Module và quyền sở hữu nghiệp vụ**. Điểm tiếp thị và khu vực sắp tài được quản lý trong năng lực Điều phối và Hàng đợi (M03), thay vì tạo một Module độc lập. Trung tâm Điều hành giám sát và can thiệp qua M07.
+
 | Module | Trách nhiệm | Truy vết KPMG |
 |---|---|---|
-| M01 — Khách hàng và Đặt xe | Khách hàng/liên hệ/địa chỉ, tiếp nhận đa kênh, tạo/sửa/hủy yêu cầu, đặt ngay/đặt trước, phiên và mã đặt xe | TO.P1, P2, P5, P6, P7, P8; TO.A; TO.D |
-| M02 — Đội xe và Đối tác | Hồ sơ tài xế/xe, trạng thái, năng lực, khả năng sẵn sàng, định danh và thuộc tính khai thác | TO.B; TO.C.12–13; TO.F.8 |
-| M03 — Điều phối và Hàng đợi | Unicast/broadcast, danh sách xe ứng viên, tài xế tự đăng ký, Điều hành chỉ định, hủy/từ chối, chống trùng xe, quy tắc khách chờ/nhắc xe/hàng đợi | TO.P1–P8; TO.B.1–B.10; TO.C.8–C.15; TO.F.5–F.6 |
-| M04 — Ứng dụng Tài xế và Chuyến đi | Tác nghiệp tài xế, đón khách, xác nhận đến, xác minh khách, đồng hồ/chuyến, GPS, kết thúc và ngoại lệ | TO.P1–P9; TO.B; TO.C.12–C.13 |
-| M05 — Giá cước và Thanh toán | Ước tính, cước đồng hồ, cước cố định đường dài, phụ trội, chiều về, đi ghép, hóa đơn, tiền mặt/MCC/thẻ/voucher | TO.P2, P8, P9; TO.A.8–A.11, A.16; TO.F.1–F.4 |
-| M06 — Điểm tiếp thị và Khu vực sắp tài | Danh mục điểm, hàng đợi có/không có nhân viên, FIFO, sức chứa, điều hành điểm, vị trí và hiệu quả điểm | TO.P3–P4; TO.B.3, B.7; TO.C.5–C.7; TO.E |
-| M07 — Tổng đài và Trung tâm kiểm soát | Màn hình điện thoại viên, nhận diện người gọi, địa chỉ lưu/phím tắt, cuộc gọi nhỡ, nhắc xe, danh sách chờ, màn hình điều phối và quyền can thiệp | TO.P1, P3–P7; TO.C; TO.D |
-| M08 — Chăm sóc khách hàng và Quản lý sự cố | Đánh giá, khiếu nại, hành lý thất lạc, tai nạn, lỗi kỹ thuật, sự cố an ninh và sự không phù hợp nội bộ | TO.P1–P9; TO.A.17; TO.I.9 |
-| M09 — Báo cáo và Phân tích | Nhu cầu, doanh thu, năng suất, hiệu suất đội xe, chất lượng tài xế, ngoại lệ vận hành, so sánh và dự báo tùy chọn | TO.C; TO.G; TO.H; TO.I |
-| M10 — Nền tảng, Tích hợp và Vận hành CNTT | Định danh, vai trò/nhóm, nhật ký kiểm soát/bảo mật, tích hợp CRM/nhân sự/kế toán, năng lực tải, khả năng phục hồi và vận hành | TO.F.7–F.9; TO.J |
+| M01 — Khách hàng và Đặt xe | Hồ sơ khách hàng/địa chỉ, tiếp nhận đa kênh, tạo/sửa/hủy Booking, đặt ngay/đặt trước | TO.P1, P2, P5, P6, P7, P8; TO.A; TO.D |
+| M02 — Đội xe và Đối tác | Hồ sơ tài xế/xe, đội xe, đối tác, hợp đồng, giấy tờ và điều kiện khai thác | TO.B; TO.C.12–13; TO.F.8 |
+| M03 — Điều phối và Hàng đợi | Unicast/broadcast, điều kiện đủ tư cách, xếp hạng, Offer, Assignment, điều phối lại, điểm tiếp thị và FIFO | TO.P1–P8; TO.B; TO.C; TO.E; TO.F.5–F.6 |
+| M04 — Ứng dụng Tài xế và Chuyến đi | Tác nghiệp tài xế, đón khách, xác nhận đến, Trip, GPS, kết thúc và ngoại lệ | TO.P1–P9; TO.B; TO.C.12–C.13 |
+| M05 — Giá cước và Thanh toán | Biểu giá, báo giá, cước đồng hồ/đường dài/chiều về/đi ghép, hóa đơn, thu/hoàn tiền | TO.P2, P8, P9; TO.A.8–A.11, A.16; TO.F.1–F.4 |
+| M06 — Tài chính và Quyết toán | Sổ cái, doanh thu, công nợ, nghĩa vụ đối tác, đối soát và chi trả | TO.F.1; TO.H |
+| M07 — Trung tâm Điều hành và Chăm sóc khách hàng | Bảng điều hành, bản đồ, hàng đợi giám sát, can thiệp có kiểm soát, khiếu nại và SLA | TO.P1, P3–P7; TO.C; TO.D; TO.I |
+| M08 — Nền tảng, Phân quyền và Kiểm toán | Định danh, vai trò/nhóm, phạm vi dữ liệu, cấu hình chính sách, nhật ký và vận hành nền tảng | TO.F.7–F.9; TO.J |
+| M09 — Tích hợp và Thông báo | Kết nối bản đồ, SMS/Voice/Push/Email, cổng đối tác, thanh toán và hệ thống doanh nghiệp | TO.P1–P8; TO.J |
+| M10 — Báo cáo và Phân tích | Báo cáo nhu cầu, doanh thu, năng suất, hiệu suất đội xe, chất lượng và ngoại lệ vận hành | TO.G; TO.H; TO.I |
 
-Việc nhóm thành Module là đề xuất ranh giới phần mềm. Vai trò quy trình trong KPMG vẫn là trách nhiệm nghiệp vụ; cơ cấu tổ chức và ma trận RACI cuối cùng cần Mai Linh xác nhận.
+Ranh giới Module là đề xuất kiến trúc, không phải phân công tổ chức. Mỗi Module sở hữu dữ liệu nghiệp vụ của mình; các Module khác truy cập qua API/sự kiện hoặc mô hình đọc. Chi tiết trách nhiệm, dữ liệu sở hữu và bàn giao được quy định tại tài liệu 03.
+
 
 ## 6. Đối tượng nghiệp vụ chuẩn và quyền sở hữu dữ liệu
 
