@@ -69,7 +69,7 @@ Theo Feature Catalog hiện có trong [M01 README](../../02-DOMAIN-MODULES/01-cu
 | CUS-001 | Hồ sơ và tra cứu khách hàng | P1 | PLANNED |
 | [BKG-001](./M01-customer-and-booking/BKG-001-create-immediate-booking.md) | Tạo Booking tức thời | P0 | DRAFT v0.1 |
 | BKG-002 | Tạo Booking đặt trước | P1 | PLANNED |
-| BKG-003 | Kiểm tra hợp lệ và vùng phục vụ | P0 | PLANNED |
+| [BKG-003](./M01-customer-and-booking/BKG-003-validation-and-serviceability.md) | Kiểm tra hợp lệ và vùng phục vụ | P0 | DRAFT v0.1 |
 | BKG-004 | Điểm đón/điểm đến/các điểm dừng theo thứ tự | P0 | PLANNED |
 | BKG-005 | Sửa đổi Booking / yêu cầu thay đổi | P1 | PLANNED |
 | BKG-006 | Hủy Booking / chính sách hủy | P1 | PLANNED |
