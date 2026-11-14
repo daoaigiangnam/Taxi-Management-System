@@ -36,7 +36,8 @@
 - [State Machines & Transition Rules](./03-CROSS-CUTTING/01-state-machines-and-transition-rules.md)
 - [Data Architecture & ERD](./03-CROSS-CUTTING/02-data-architecture-and-erd.md)
 - [API & Event Contracts](./03-CROSS-CUTTING/03-api-and-event-contracts.md)
-- Security, NFR, Delivery Governance: sẽ bổ sung và liên kết tại đây sau khi xác nhận cấu trúc.
+- [Security, IAM & Audit](./03-CROSS-CUTTING/04-security-iam-and-audit.md)
+- NFR và Delivery Governance: sẽ bổ sung và liên kết tại đây sau khi xác nhận cấu trúc.
 
 ## 4. Sơ đồ hệ thống
 Quy trình nghiệp vụ chuẩn:
