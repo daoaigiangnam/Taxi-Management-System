@@ -1,17 +1,15 @@
 # X-02 — KIẾN TRÚC DỮ LIỆU VÀ ERD
-
 **Version:** 0.1 · **Status:** DRAFT · **Owner:** Data Architect/Domain Owners
 
-## 1. Data ownership
-Each Module owns its write model. Cross-module access through versioned APIs/events; reporting may use projections. Direct cross-module table updates are prohibited by design.
+## 1. Ownership
+Each Module owns its write model. Cross-module access uses versioned APIs/events. Reporting may use read projections. Cross-module direct table updates are prohibited.
 
-## 2. Core logical entities
-
-| Domain | Entities | Key relations |
+## 2. Core entities
+| Domain | Entities | Relations |
 |---|---|---|
 | Customer | Customer, ContactPoint, SavedPlace | Customer 1-N Booking |
 | Booking | Booking, BookingStop, BookingRevision | Booking 1-N stops/revisions |
-| Fleet | Driver, Vehicle, DriverVehicleLink, Shift | Driver/Vehicle eligibility |
+| Fleet | Driver, Vehicle, DriverVehicleLink, Shift | Eligibility |
 | Partner | Partner, Contract, ContractVersion | Partner 1-N contracts |
 | Dispatch | DispatchRun, CandidateSnapshot, Offer, Assignment | Booking 1-N runs/offers/assignments |
 | Trip | Trip, TripEvent, IncidentCase | Trip references Booking + Assignment |
@@ -20,10 +18,9 @@ Each Module owns its write model. Cross-module access through versioned APIs/eve
 | Finance | LedgerEntry, Receivable, Payable | Posting references source event |
 | Settlement | SettlementBatch, SettlementLine, Payout | Batch 1-N lines |
 | Platform | User, Role, Permission, AuditEvent | Actor/scope/audit |
-| Support | ServiceCase, Complaint | Case references Booking/Trip/customer |
+| Support | ServiceCase, Complaint | References booking/trip/customer |
 
 ## 3. Logical ERD
-
 ```mermaid
 erDiagram
  CUSTOMER ||--o{ BOOKING : creates
@@ -46,16 +43,8 @@ erDiagram
  SETTLEMENT_BATCH ||--o{ SETTLEMENT_LINE : contains
 ```
 
-## 4. Data invariants
-- BookingStop sequence unique per Booking.
-- Offer unique identifier and expiry.
-- At most one active Assignment per Booking; resource conflict constraints.
-- Trip references valid Assignment; prevent multiple active trips for same resource.
-- Fare result preserves tariff/version/input snapshot.
-- Financial amount stored with currency and approved precision; no floating point for posted money.
-- Ledger source_event unique/idempotent and balanced according to approved accounting mapping.
-- Contract snapshot is immutable once referenced by a completed trip/settlement.
-- Audit and posted finance are append-only with correction links.
+## 4. Invariants
+BookingStop sequence unique per Booking; Offer ID unique/expiry server-owned; one active Assignment per Booking; no resource conflict; Trip references valid Assignment; FareResult preserves tariff/input snapshot; money uses currency precision; Ledger source event unique/idempotent and balanced; Contract snapshot immutable when referenced; audit/posted finance append-only.
 
-## 5. Physical design decisions TBD
-DB engine/version, spatial index/GPS store, partitioning, retention/archival, tenant/branch/partner scoping, encryption, backup, read replicas, consistency boundary, ID strategy, event store/outbox and warehouse.
+## 5. Physical design TBD
+DB engine/version, spatial index/GPS store, partitioning, retention/archival, tenant/branch/partner scope, encryption, backup, read replicas, transaction boundaries, ID strategy, outbox and warehouse.
