@@ -2,7 +2,7 @@
 
 **Mã tài liệu:** TAXI-BIZ-004  
 **Phiên bản:** 0.5  
-**Trạng thái:** ĐANG XÂY DỰNG — TO.P1–TO.P5 ĐÃ ĐẶC TẢ BẢN ĐẦU; TO.P6–TO.P9 CHƯA ĐẶC TẢ  
+**Trạng thái:** ĐANG XÂY DỰNG — TO.P1–TO.P6 ĐÃ ĐẶC TẢ BẢN ĐẦU; TO.P7–TO.P9 CHƯA ĐẶC TẢ  
 **Nguồn nghiệp vụ:** *MLG_Luu do va mo ta quy trinh & Yeu cau _Dieu hanh taxi_v3.docx*, KPMG, 2015.
 
 > Tài liệu này bám theo mã bước, vai trò và mô tả trong tài liệu KPMG. Không xem quy trình năm 2015 là chính sách hiện hành. Những nội dung KPMG để [xxx], yêu cầu Mai Linh tự quy định hoặc chưa đủ dữ liệu đều được giữ ở trạng thái cần xác nhận. Phần diễn giải thiết kế hệ thống được tách riêng khỏi nội dung nguồn.
@@ -16,7 +16,7 @@
 | TO.P3 | Khách yêu cầu tại Điểm tiếp thị có nhân viên điều hành điểm | Đã dựng luồng và swimlane bản đầu |
 | TO.P4 | Khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm | Đã dựng luồng và swimlane bản đầu |
 | TO.P5 | Khách hàng yêu cầu Taxi qua SMS | Đã dựng luồng và swimlane bản đầu |
-| TO.P6 | Khách hàng yêu cầu Taxi qua Chat | Chưa đặc tả |
+| TO.P6 | Khách hàng yêu cầu Taxi qua Chat | Đã dựng luồng và swimlane bản đầu |
 | TO.P7 | Khách hàng yêu cầu Taxi qua Web | Chưa đặc tả |
 | TO.P8 | Khách hàng đặt xe trước | Chưa đặc tả |
 | TO.P9 | Cước phí đường dài | Chưa đặc tả |
@@ -1034,7 +1034,232 @@ Các nội dung sau là đề xuất thiết kế:
 9. Có test case cho cú pháp sai/đúng, định vị lỗi, SMS trùng, hủy, đặt trước, điều phối, tài xế từ chối, khách gọi nhắc, khách không nghe máy, sai mã, Trip, hóa đơn và thanh toán.
 
 
-## 7. Tiêu chí hoàn thành một quy trình
+
+## 7. TO.P6 — Khách hàng yêu cầu Taxi qua Chat
+
+### 7.1. Mục tiêu và phạm vi theo KPMG
+
+Quy trình mô tả việc khách hàng chat trực tiếp với tổng đài viên trên các kênh website Mai Linh để yêu cầu xe, thay đổi hoặc hủy dịch vụ. Theo mô tả tổng quan KPMG 2015, khách hàng có thể chat mà không cần tài khoản thành viên. Quy trình bao gồm tiếp nhận chat, nhập Booking, điều phối xe, đón khách, thực hiện chuyến, thanh toán và phản hồi.
+
+**Phân biệt với TO.P5:** TO.P5 tiếp nhận nội dung SMS theo cú pháp; TO.P6 có tổng đài viên tương tác trực tiếp, nhập dữ liệu và gửi mã đặt chỗ qua chat. Tuy nhiên, từ TO.P6.5 trở đi, phần lớn luồng điều phối và thực hiện chuyến tương đồng với các kênh khác.
+
+### 7.2. Vai trò tham gia
+
+| Vai trò | Trách nhiệm được mô tả trong nguồn |
+|---|---|
+| Khách hàng | Chat yêu cầu/thay đổi/hủy; nhận mã đặt chỗ; có thể gọi nhắc; lên xe, thanh toán và phản hồi |
+| Tổng đài viên | Tiếp nhận nội dung chat; nhập, sửa, hủy Booking; gửi mã đặt chỗ; hỗ trợ khách chờ lâu và thông báo tình trạng xe |
+| Tổng đài Điều hành | Phát yêu cầu Unicast/Broadcast; theo dõi khách chờ lâu; chỉ định xe; xử lý thiếu xe |
+| Tài xế | Theo dõi yêu cầu, đăng ký hoặc hủy đăng ký; nhận chỉ định; đến điểm đón, liên hệ khách và thực hiện chuyến |
+| Hệ thống | Sinh mã đặt chỗ, cập nhật bản đồ, phát yêu cầu, cập nhật trạng thái xe và Booking, ghi nhận lịch sử và hỗ trợ báo cáo |
+
+### 7.3. Luồng tổng thể
+
+```mermaid
+flowchart TD
+ A["Khách hàng mở phiên Chat với Tổng đài"] --> B["Trao đổi: yêu cầu mới / thay đổi / hủy"]
+ B --> C{"Loại yêu cầu"}
+ C -->|"Yêu cầu mới"| D["Tổng đài viên nhập thông tin Booking"]
+ C -->|"Thay đổi"| E["Tra cứu bằng mã đặt chỗ và cập nhật"]
+ C -->|"Hủy"| F["Tra cứu mã đặt chỗ và nhập hủy"]
+ E --> G{"Đã có xe đăng ký?"}
+ G -->|"Có"| H["Cập nhật thông tin cho xe đã đăng ký"]
+ G -->|"Chưa"| D
+ F --> I["Hủy Booking và giải phóng xe nếu có"]
+ D --> J["Sinh mã đặt chỗ, gửi qua Chat và cập nhật bản đồ"]
+ J --> K{"Đặt chỗ trước?"}
+ K -->|"Có"| L["Chuyển TO.P8"]
+ K -->|"Không"| M["Phát yêu cầu Unicast / Broadcast"]
+ M --> N["Tài xế theo dõi và đăng ký"]
+ N --> O{"Có xe nhận hoặc được chỉ định?"}
+ O -->|"Chưa"| P["Theo dõi khách chờ lâu, cập nhật và chỉ định xe"]
+ P --> Q{"Khách còn chờ?"}
+ Q -->|"Không"| I
+ Q -->|"Có"| O
+ O -->|"Có"| R["Tài xế đến điểm đón"]
+ R --> S{"Gặp khách?"}
+ S -->|"Không"| T["Gọi khách và chờ phản hồi"]
+ T --> U{"Khách tiếp tục chờ?"}
+ U -->|"Không"| I
+ U -->|"Có"| V["Khách lên xe, xác nhận mã đặt chỗ"]
+ S -->|"Có"| V
+ V --> W["Nhập điểm đến, xác định phương thức cước"]
+ W --> X{"Chọn cước đường dài?"}
+ X -->|"Có"| Y["Chuyển TO.P9"]
+ X -->|"Không"| Z["Thực hiện chuyến"]
+ Y --> AA["Kết thúc chuyến, lập hóa đơn"]
+ Z --> AA
+ AA --> AB["Thanh toán"]
+ AB --> AC["Khách hàng đánh giá dịch vụ"]
+```
+
+**Giới hạn:** Đây là lưu đồ tổng hợp để đọc nhanh. Các nhánh chi tiết phải đối chiếu bảng bước và chính sách hiện hành trước khi dùng làm căn cứ phát triển. Nhánh thay đổi khi đã có xe đăng ký cần xác định rõ việc tài xế xác nhận đã nhận thông tin mới.
+
+### 7.4. Diễn giải các bước TO.P6.1–TO.P6.29 theo KPMG
+
+| Mã bước | Hoạt động | Vai trò theo nguồn | Nội dung được mô tả trong KPMG |
+|---|---|---|---|
+| TO.P6.1 | Chat yêu cầu/thay đổi/hủy dịch vụ taxi | Khách hàng | Chat với tổng đài viên để yêu cầu xe, thay đổi yêu cầu hoặc hủy dịch vụ |
+| TO.P6.2 | Nhập dữ liệu vào hệ thống | Tổng đài viên | Yêu cầu mới: nhập số nhà, đường, phường, quận, loại/hiệu xe, đặc điểm, số điện thoại nếu cần và số lượng xe theo loại. Thay đổi: nhập mã đặt chỗ, chọn yêu cầu để chỉnh sửa; nếu đã có xe đăng ký thì cập nhật thông tin cho xe, nếu chưa có xe thì xử lý như yêu cầu mới. Hủy: nhập mã đặt chỗ, chọn yêu cầu; xe đã đăng ký được chuyển về trạng thái xe trống |
+| TO.P6.3 | Gửi mã đặt chỗ xác nhận | Tổng đài viên / Hệ thống | Hệ thống sinh mã đặt chỗ; tổng đài viên gửi mã cho khách qua Chat; điểm đón được tự động cập nhật lên bản đồ |
+| TO.P6.4 | Đặt chỗ trước? | Tổng đài Điều hành | Nếu đặt trước thì chuyển TO.P8; nếu đi ngay thì sang P6.5 |
+| TO.P6.5 | Phát yêu cầu Unicast/Broadcast | Tổng đài Điều hành / Hệ thống | Unicast mặc định đến xe trống trong bán kính [xxx] km, có thể điều chỉnh. Broadcast đến xe trống toàn hệ thống, do Tổng đài kiểm soát trong tình huống đặc biệt như cao điểm/thiếu xe cục bộ. Hệ thống cảnh báo nhu cầu tăng đột biến và hiển thị danh sách khách chờ lâu, gồm cả khách đã/chưa có xe đăng ký |
+| TO.P6.6 | Theo dõi điểm đón được phát | Tài xế | Theo dõi yêu cầu Unicast/Broadcast và quyết định nhận yêu cầu Unicast hoặc chạy theo Broadcast tại khu vực cao điểm |
+| TO.P6.7 | Đăng ký đón khách | Tài xế / Hệ thống | Tài xế nhấn đăng ký trên ứng dụng. Mỗi thời điểm chỉ đăng ký một yêu cầu; sau khi đăng ký vẫn nhìn thấy yêu cầu khác và xe ở trạng thái “đón khách”. Ứng dụng hiển thị 10 yêu cầu chưa đăng ký gần nhất theo lộ trình giao thông thực; ngoài bán kính [xxx] km có thể thấy nhưng không đăng ký được |
+| TO.P6.8 | Hủy đăng ký đón khách? | Tài xế / Hệ thống | Nếu tài xế hủy, Booking trở về “chưa có xe đăng ký”, hiển thị lại trong bán kính phát; xe trở về trạng thái trống. Hệ thống ghi nhận lịch sử để truy vấn báo cáo định kỳ. Nếu không hủy, tài xế đến điểm đón (P6.19) |
+| TO.P6.9 | Gửi tin nhắn cập nhật tình hình xe | Tổng đài Điều hành / Hệ thống | Dựa vào danh sách khách chờ lâu chưa có xe, gửi cập nhật cho khách. Nguồn nêu ví dụ thông báo qua tin nhắn và yêu cầu khách chờ thêm [XX] phút; cần xác nhận kênh cập nhật tương ứng với Booking qua Chat |
+| TO.P6.10 | Nhắn tin hủy đặt xe | Khách hàng / Hệ thống | Nếu không đồng ý chờ, khách gửi SMS hủy theo cú pháp “HUY [Mã số đặt xe]”; hệ thống tự hủy mã đặt chỗ và trả xe đã đăng ký (nếu có) về trạng thái trống. Nếu khách không chờ nhưng không gửi tin hủy, nguồn nêu hệ thống vẫn tiếp tục chỉ định xe |
+| TO.P6.11 | Chỉ định xe rước khách | Tổng đài Điều hành / Hệ thống | Nếu không có tin nhắn hủy, Tổng đài có quyền chỉ định xe gần nhất theo lộ trình giao thông thực cho khách chờ lâu |
+| TO.P6.12 | Tài xế từ chối chỉ định? | Tài xế / Hệ thống | Tài xế nhấn từ chối hoặc không nhấn chấp nhận trong [xxx] phút thì được xem là từ chối; Tổng đài chỉ định xe khác và hệ thống lập báo cáo từ chối. Nếu chấp nhận, chuyển P6.18 |
+| TO.P6.13 | Cần thông báo khách hàng không có xe? | Tổng đài viên | Nếu đã chỉ định nhiều xe trong [xxx] phút mà vẫn không có xe đăng ký thì thông báo khách qua gọi/nhắn tin, sang P6.14. Nếu chưa hết thời hạn thì tiếp tục chỉ định xe gần nhất; hệ thống ghi nhận tài xế từ chối |
+| TO.P6.14 | Thông báo khách hàng không có xe | Tổng đài viên | Khi đã chỉ định nhiều xe trong [xxx] phút mà vẫn không có xe, dựa trên danh sách khách chờ lâu và thời gian từ lần gọi khách cuối cùng [xxx] phút để thông báo; sau đó tiến hành hủy theo P6.15 |
+| TO.P6.15 | Hủy yêu cầu đặt xe | Tổng đài viên / Hệ thống | Nếu khách không chờ, Tổng đài nhập hủy; yêu cầu biến khỏi danh sách khách chờ lâu, bản đồ và danh sách trên ứng dụng tài xế. Xe đã đăng ký được trả về trạng thái trống |
+| TO.P6.16 | Khách hàng gọi nhắc | Khách hàng | Khách chờ lâu có thể gọi Tổng đài viên để nhắc xe |
+| TO.P6.17 | Ghi nhận số lần nhắc | Tổng đài viên / Hệ thống | Tra cứu theo số điện thoại; nếu khách dùng số khác thì tra theo mã đặt chỗ. Hiển thị yêu cầu để Tổng đài viên ghi nhận số lần nhắc, tình trạng xe đăng ký và ETA để thông báo khách |
+| TO.P6.18 | Nhận chỉ định đón khách | Tài xế / Hệ thống | Tài xế thấy yêu cầu được chỉ định và nhấn đồng ý. Nguồn ghi nhận tài xế vẫn nhìn thấy yêu cầu khác và có thể hủy nhận chỉ định. Hệ thống ghi nhận xe đã nhận chỉ định. Cơ chế ưu đãi/khuyến khích tài xế được nêu là chính sách cần Mai Linh thảo luận và đồng ý |
+| TO.P6.19 | Đến điểm đón khách | Tài xế | Tài xế đến điểm đón |
+| TO.P6.20 | Thấy khách? | Tài xế | Nếu thấy khách thì sang P6.23; nếu không thấy thì sang P6.21 |
+| TO.P6.21 | Tài xế gọi khách báo xe đến | Tài xế | Gọi khách báo xe đến; nếu không liên lạc được có thể báo cáo để nhận cuốc khác. Thời gian chờ khách cần được quy định, có thể khác nhau theo vị trí |
+| TO.P6.22 | Khách hàng phản hồi | Khách hàng / Tổng đài viên | Nếu khách hủy, Tổng đài viên nhập hủy theo P6.15 để xe nhận yêu cầu khác. Nếu khách vẫn chờ, yêu cầu khách nhanh chóng ra xe và sang P6.23. Nếu khách không bắt máy, cần quy định số lần gọi lại và khoảng thời gian |
+| TO.P6.23 | Khách lên xe, thông báo điểm đến | Tài xế / Khách hàng | Khách lên xe, thông báo điểm đến và tài xế xác nhận mã đặt chỗ. Nếu khách không có mã/chưa gọi Tổng đài, tài xế báo hủy đăng ký do đón nhầm để Booking trở về chưa có xe đăng ký. Nếu mã khách cung cấp khác mã tài xế đã đăng ký, tài xế hủy mã cũ và báo Tổng đài mã đặt chỗ hoặc số điện thoại khách đã dùng |
+| TO.P6.24 | Bấm đồng hồ, nhập điểm đến | Tài xế / Hệ thống | Tài xế bấm đồng hồ, nhập điểm đến để ứng dụng hướng dẫn đường; thông báo lộ trình với khách. Nếu khách yêu cầu, tài xế hiển thị cước ước tính |
+| TO.P6.25 | Có thể áp dụng cước phí đường dài? | Tài xế / Hệ thống | Nếu đủ điều kiện, hệ thống hiển thị cước đường dài để khách chọn cước cố định hoặc cước đồng hồ. Chọn cước đường dài chuyển TO.P9; chọn cước đồng hồ sang P6.26 |
+| TO.P6.26 | Thực hiện dịch vụ chở khách | Tài xế / Hệ thống | Tài xế chở khách đến nơi; hành trình được lưu vết bởi hệ thống quản lý hành trình trên xe |
+| TO.P6.27 | Kết thúc hành trình và xuất hóa đơn | Tài xế / Hệ thống | Hóa đơn gồm cước đồng hồ, cước cố định/phụ thu vượt lộ trình đường dài, phí cầu đường, tiền tip, số tài/MSNV, điểm đầu/cuối và ngày giờ |
+| TO.P6.28 | Thanh toán | Khách hàng / Tài xế | Khách kiểm tra hóa đơn và thanh toán. KPMG 2015 liệt kê tiền mặt, MCC, thẻ tín dụng/thẻ ATM và voucher; tài xế kẹp chứng từ tương ứng vào hóa đơn |
+| TO.P6.29 | Khách hàng phản hồi chất lượng dịch vụ | Khách hàng | Chấm điểm dịch vụ là bắt buộc theo nguồn; góp ý/phàn nàn chi tiết là tùy chọn. Kênh gồm ứng dụng Mai Linh Taxi, khách gọi Tổng đài hoặc Tổng đài gọi khách ngẫu nhiên |
+
+### 7.5. Swimlane theo vai trò
+
+```mermaid
+flowchart TB
+ subgraph KH["Khách hàng"]
+  A1["Mở Chat và trao đổi yêu cầu"] --> A2["Nhận mã đặt chỗ"]
+  A2 --> A3["Chat thay đổi / hủy hoặc gọi nhắc"]
+  A3 --> A4["Lên xe, thanh toán và đánh giá"]
+ end
+ subgraph TV["Tổng đài viên"]
+  B1["Tiếp nhận Chat"] --> B2["Nhập / sửa / hủy Booking"]
+  B2 --> B3["Gửi mã đặt chỗ qua Chat"]
+  B3 --> B4["Theo dõi khách chờ lâu"]
+  B4 --> B5["Thông báo khách / nhập hủy khi cần"]
+ end
+ subgraph DH["Tổng đài Điều hành"]
+  C1["Phát Unicast / Broadcast"] --> C2["Theo dõi hàng chờ"]
+  C2 --> C3["Chỉ định xe gần nhất"]
+  C3 --> C4["Theo dõi kết quả nhận / từ chối"]
+ end
+ subgraph TX["Tài xế"]
+  D1["Theo dõi yêu cầu trên ứng dụng"] --> D2["Đăng ký hoặc hủy đăng ký"]
+  D2 --> D3["Nhận chỉ định nếu được chọn"]
+  D3 --> D4["Đến điểm đón và liên hệ khách"]
+  D4 --> D5["Xác nhận mã đặt chỗ"]
+  D5 --> D6["Thực hiện chuyến và lập hóa đơn"]
+ end
+ A1 --> B1
+ B3 --> C1
+ C1 --> D1
+ D1 --> C2
+ C3 --> D3
+ B5 --> A3
+ D4 --> A4
+ D6 --> A4
+```
+
+Swimlane là sơ đồ trách nhiệm khái quát. Nhánh hủy qua SMS trong TO.P6.10 là nội dung được ghi nguyên theo nguồn KPMG, nhưng không khớp tự nhiên với kênh Chat; cần xác nhận trước khi thiết kế giao diện/kênh hủy.
+
+### 7.6. Dữ liệu đầu vào và đầu ra
+
+| Nhóm | Dữ liệu theo tài liệu nguồn |
+|---|---|
+| Phiên Chat | Kênh/phiên Chat, nội dung trao đổi, khách yêu cầu mới/thay đổi/hủy |
+| Đầu vào Booking | Số nhà, đường, phường, quận, loại/hiệu xe, đặc điểm, số điện thoại nếu cần, số lượng xe theo loại |
+| Tra cứu/cập nhật | Mã đặt chỗ, Booking được chọn, nội dung thay đổi, trạng thái xe đã đăng ký |
+| Xác nhận | Mã đặt chỗ, nội dung gửi qua Chat, điểm đón cập nhật lên bản đồ |
+| Điều phối | Xe trống, Unicast/Broadcast, bán kính phát, đăng ký/hủy đăng ký, chỉ định và kết quả nhận/từ chối |
+| Theo dõi chờ | Thời gian chờ, lần liên hệ gần nhất, số lần khách nhắc, tình trạng xe và ETA |
+| Đón khách | Điểm đón, thời điểm xe đến, liên hệ khách, mã đặt chỗ khách cung cấp |
+| Trip/hóa đơn | Điểm đến, dữ liệu đồng hồ, hành trình, cước, phụ thu, phí cầu đường, tip, số tài/MSNV, ngày giờ |
+| Kết quả | Thanh toán, điểm đánh giá bắt buộc và ý kiến tùy chọn |
+
+### 7.7. Điểm bàn giao Module theo kiến trúc đề xuất
+
+| Hoạt động nghiệp vụ | Module sở hữu/đảm nhiệm | Bàn giao |
+|---|---|---|
+| Nhận phiên Chat, lưu thông điệp và trạng thái giao tiếp | M09 — Integration phối hợp M07 — Control Center | Nội dung Chat và định danh phiên để tổng đài viên xử lý |
+| Tạo/sửa/hủy Booking, sinh mã đặt chỗ | M01 — Booking | Booking hợp lệ, có kênh nguồn Chat |
+| Hồ sơ, trạng thái và vị trí xe/tài xế | M02 — Fleet/Driver | Nguồn lực đủ điều kiện cung cấp cho điều phối |
+| Phát yêu cầu, đăng ký/hủy, chỉ định và hàng đợi | M03 — Dispatch & Queue | Offer/Assignment và lịch sử điều phối |
+| Đến đón, bắt đầu/kết thúc Trip, hành trình | M04 — Trip | Sự kiện Trip |
+| Biểu giá, tính cước, hóa đơn và thanh toán | M05 — Fare & Payment | Kết quả tài chính |
+| Doanh thu, công nợ và đối soát | M06 — Finance | Dữ liệu tài chính phân tách DIRECT/PARTNER |
+| Màn hình Chat/tổng đài, giám sát và can thiệp | M07 — Control Center | Lệnh nghiệp vụ đến Module sở hữu dữ liệu |
+| Người dùng, quyền và nhật ký | M08 — Identity & Access | Quyền truy cập và dấu vết kiểm toán |
+| Kết nối Chat, gửi/nhận thông điệp và trạng thái nhà cung cấp | M09 — Integration | Thông điệp, trạng thái gửi/nhận, mã giao dịch |
+| Báo cáo khách chờ, số lần nhắc, hủy đăng ký và từ chối | M10 — Reporting | Báo cáo từ dữ liệu Module nguồn |
+
+### 7.8. Các điểm cần Mai Linh xác nhận
+
+| Mã quyết định | Nội dung chưa được chốt | Căn cứ |
+|---|---|---|
+| P6-DEC-01 | Kênh Chat chính thức: website, ứng dụng hay nền tảng bên thứ ba; có cho phép khách không đăng nhập không | Phạm vi TO.P6 và TO.P6.1 |
+| P6-DEC-02 | Có bắt buộc số điện thoại xác thực; cách liên kết phiên Chat với khách hàng và Booking | TO.P6.1–P6.3 |
+| P6-DEC-03 | Bộ trường bắt buộc, danh mục loại/hiệu xe, số lượng xe và đặc điểm | TO.P6.2 |
+| P6-DEC-04 | Quy tắc tra cứu bằng mã đặt chỗ; xử lý mã sai, trùng hoặc khách không còn phiên Chat | TO.P6.2 |
+| P6-DEC-05 | Khi sửa Booking đã có xe đăng ký, tài xế phải xác nhận cập nhật hay hệ thống cập nhật tự động; nếu tài xế không xác nhận thì xử lý thế nào | TO.P6.2 |
+| P6-DEC-06 | Mẫu nội dung Chat xác nhận, cập nhật, hủy và thông báo không có xe | TO.P6.3, P6.9, P6.14 |
+| P6-DEC-07 | Bán kính Unicast, điều kiện Broadcast và quyền bật/tắt | TO.P6.5 |
+| P6-DEC-08 | Bán kính đăng ký, danh sách 10 yêu cầu và giới hạn một yêu cầu/tài xế | TO.P6.7 |
+| P6-DEC-09 | Ngưỡng khách chờ lâu và kênh gửi cập nhật; nguồn mô tả gửi tin nhắn dù Booking đến từ Chat | TO.P6.9 |
+| P6-DEC-10 | Có duy trì hủy qua SMS “HUY [Mã số đặt xe]” cho Booking tạo từ Chat hay thay bằng nút hủy trong Chat | TO.P6.10 |
+| P6-DEC-11 | Điều kiện chỉ định xe, bán kính/tiêu chí xe gần nhất và quyền can thiệp của Tổng đài | TO.P6.11 |
+| P6-DEC-12 | Thời hạn phản hồi chỉ định [xxx], số lần chỉ định tối đa và tổng thời gian chờ trước khi thông báo không có xe | TO.P6.12–P6.14 |
+| P6-DEC-13 | Quy tắc ghi nhận cuộc gọi nhắc và nhận diện khách dùng số điện thoại khác | TO.P6.16–P6.17 |
+| P6-DEC-14 | Tài xế có được hủy nhận chỉ định sau khi đã đồng ý; điều kiện và hậu quả đối với trạng thái xe | TO.P6.18 |
+| P6-DEC-15 | Chính sách thưởng/khuyến khích tài xế nhận chỉ định và cuốc ngắn | TO.P6.18 |
+| P6-DEC-16 | Thời gian chờ khách tại điểm đón, số lần gọi lại và điều kiện giải phóng xe | TO.P6.21–P6.22 |
+| P6-DEC-17 | Quy tắc xác minh mã đặt chỗ khi khách lên xe; xử lý không có mã, sai mã hoặc đón nhầm | TO.P6.23 |
+| P6-DEC-18 | Điều kiện/cước đường dài, phương thức thanh toán và thang điểm phản hồi hiện hành | TO.P6.25–P6.29 |
+
+### 7.9. Diễn giải thiết kế hệ thống — tách biệt với yêu cầu nguồn
+
+Các nội dung sau là đề xuất thiết kế, không phải nguyên văn yêu cầu KPMG:
+
+- Mỗi phiên Chat cần có định danh riêng; lưu người tham gia, thời điểm mở/đóng, nội dung trao đổi và liên kết tới Booking. Không đồng nhất phiên Chat với Booking vì một phiên có thể trao đổi nhiều yêu cầu.
+- Booking chỉ được tạo khi tổng đài viên xác nhận đủ dữ liệu tối thiểu; cần lưu người nhập, thời điểm nhập và nguồn kênh Chat.
+- Mã đặt chỗ phải duy nhất, khó đoán và được gửi trong chính phiên Chat. Mọi thay đổi/hủy phải ghi lịch sử trước/sau và người thực hiện.
+- Khi thay đổi Booking đã có Assignment, cần có sự kiện cập nhật gửi tới tài xế; chỉ đánh dấu tài xế đã nhận thông tin khi có xác nhận thực tế.
+- Trạng thái gửi/nhận Chat phải tách khỏi trạng thái Booking và Dispatch. Mất kết nối Chat không được tự động hiểu là khách hủy.
+- Hủy Booking phải phát sự kiện cho M03 để thu hồi Offer/Assignment và giải phóng nguồn lực theo quy tắc chống xung đột; tránh xe vừa được điều phối cho Booking khác trong khi lệnh hủy đang xử lý.
+- Nội dung TO.P6.10 là SMS hủy dù quy trình là Chat. Thiết kế không tự động áp dụng cú pháp SMS cho Chat trước khi nghiệp vụ xác nhận.
+- Tách riêng số lần khách nhắc, số lần gửi thông báo, số lần tài xế từ chối chỉ định và số lần hủy đăng ký.
+- DIRECT/PARTNER dùng chung nền tảng Chat và Dispatch nhưng Booking, hợp đồng, doanh thu, công nợ và đối soát phải gắn đúng đơn vị sở hữu.
+- Các tham số [xxx] và chính sách năm 2015 phải được cấu hình, phê duyệt; không hard-code.
+
+### 7.10. Điểm chưa nhất quán / cần đối chiếu trong tài liệu nguồn
+
+1. TO.P6.9 mô tả gửi “tin nhắn” cập nhật cho khách chờ lâu; chưa xác định đây là SMS hay thông điệp Chat. Trong khi Booking xuất phát từ Chat, hệ thống cần có quy tắc chọn kênh liên hệ.
+2. TO.P6.10 mô tả khách gửi SMS “HUY [Mã số đặt xe]” để hủy Booking trong quy trình Chat. Đây là điểm giao thoa kênh cần nghiệp vụ xác nhận, không tự sửa thành thao tác hủy qua Chat.
+3. TO.P6.13 và TO.P6.14 cùng mô tả điều kiện đã chỉ định nhiều xe trong [xxx] phút mà vẫn không có xe; ranh giới giữa bước quyết định và bước thông báo chưa thật rõ.
+4. TO.P6.14 dẫn thời gian [xxx] phút kể từ lần gọi khách hàng cuối cùng, trong khi TO.P6.1 là Chat; cần xác định “lần liên hệ cuối” có bao gồm tin nhắn Chat hay không.
+5. TO.P6.18 cho phép tài xế vẫn thấy yêu cầu khác và có thể hủy nhận chỉ định sau khi đồng ý; cần làm rõ thời điểm khóa nguồn lực và cách xử lý nếu tài xế hủy sau khi đã nhận.
+6. TO.P6.23 có nhánh không có mã/mã không khớp và hủy đăng ký để trả Booking về chưa có xe; cần xác định đây là hủy Assignment, hủy đăng ký hay hủy Booking, vì ba hành động có hậu quả khác nhau.
+7. TO.P6.2 mô tả cập nhật cho xe đã đăng ký khi khách thay đổi Booking nhưng chưa nêu cơ chế xác nhận đã nhận thay đổi của tài xế.
+8. Các ngưỡng [xxx], phương thức thanh toán và cơ chế thưởng trong tài liệu KPMG 2015 là nội dung lịch sử, không mặc định còn hiệu lực.
+
+### 7.11. Tiêu chí hoàn thành TO.P6
+
+1. Chốt kênh Chat, định danh phiên, xác thực/liên kết khách hàng và chính sách không cần đăng nhập.
+2. Chốt trường Booking, quy tắc tạo/sửa/hủy và mã đặt chỗ.
+3. Chốt cơ chế đồng bộ thay đổi Booking với tài xế đã đăng ký/được chỉ định.
+4. Chốt nội dung xác nhận, thông báo chờ lâu, thông báo không có xe và lựa chọn kênh gửi.
+5. Quyết định rõ giữ hay bỏ SMS hủy trong quy trình Chat.
+6. Chốt Unicast/Broadcast, bán kính, đăng ký, chỉ định, thời hạn phản hồi và giải phóng xe.
+7. Chốt quy tắc gọi nhắc, chờ khách, xác nhận mã đặt chỗ và xử lý đón nhầm.
+8. Chốt biểu giá, thanh toán, đánh giá và phân tách DIRECT/PARTNER.
+9. Có test case cho khách không đăng nhập, mất phiên Chat, Booking mới/sửa/hủy, tài xế đã đăng ký, Chat gửi lỗi, khách chờ lâu, SMS hủy, tài xế từ chối/hủy chỉ định, sai mã, đón nhầm, Trip, hóa đơn và thanh toán.
+
+## 8. Tiêu chí hoàn thành một quy trình
 
 Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặc tả tính năng khi:
 1. Có chủ quy trình và các vai trò tham gia được xác nhận.
@@ -1045,16 +1270,16 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 6. Có truy vết về yêu cầu nguồn KPMG và quyết định hiện hành.
 7. Có kịch bản kiểm thử và tiêu chí nghiệm thu.
 
-## 8. Trình tự tiếp tục
+## 9. Trình tự tiếp tục
 
 - Hoàn thiện TO.P1 sau khi kiểm tra lưu đồ gốc và xác nhận chính sách hiện tại.
 - Rà soát TO.P1–TO.P5 với nghiệp vụ hiện hành.
-- Đặc tả TO.P6, TO.P7 — Chat, Web.
+- Đặc tả TO.P7 — Web.
 - Đặc tả TO.P8 — đặt xe trước.
 - Đặc tả TO.P9 — cước phí đường dài.
 - Sau khi hoàn tất 9 quy trình, xây dựng bộ State Machine và ERD tổng thể dựa trên luồng đã xác nhận.
 
-## 9. Lịch sử phiên bản
+## 10. Lịch sử phiên bản
 
 | Phiên bản | Ngày | Nội dung | Trạng thái |
 |---|---|---|---|
@@ -1062,4 +1287,4 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 | 0.2 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P2 — khách hàng sử dụng ứng dụng | Đang rà soát |
 | 0.3 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P3 — khách yêu cầu tại Điểm tiếp thị | Đang rà soát |
 | 0.4 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P4 — khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm | Đang rà soát |
-| 0.5 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P5 — khách hàng yêu cầu Taxi qua SMS | Đang rà soát |
+| 0.5 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P5 — khách hàng yêu cầu Taxi qua SMS | Đang rà soát |\n| 0.6 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P6 — khách hàng yêu cầu Taxi qua Chat | Đang rà soát |
