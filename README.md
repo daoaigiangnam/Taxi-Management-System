@@ -69,5 +69,34 @@ Foundation & E2E → Domain/Module boundaries → State/Data/API/Security/NFR �
 ## 7. Trạng thái và quản trị tài liệu
 Tất cả nội dung hiện là DRAFT baseline. Mỗi quyết định cần owner/approver; mỗi Feature cần business flow, UI/UX states, validation, rules, API/event, DB, permissions, errors, tests và acceptance evidence.
 
+
+## 8. Cách đọc và thiết kế — từ tổng quan đến mức DEV triển khai
+
+Tài liệu được tổ chức theo **5 tầng**, không đi thẳng từ danh sách Module sang code:
+
+1. **Tầng A — System Overview:** mục tiêu, phạm vi, actor, hệ thống liên quan, nguyên tắc và ranh giới.
+2. **Tầng B — End-to-End Business Flows:** các luồng xuyên hệ thống theo vai trò; luồng chính, luồng thay thế, ngoại lệ và điểm bàn giao giữa Module.
+3. **Tầng C — Module Design:** mục tiêu Module, phạm vi sở hữu/không sở hữu, actor, dữ liệu, quy tắc nghiệp vụ, trạng thái, phụ thuộc và luồng nội bộ.
+4. **Tầng D — Feature Specification:** đặc tả từng chức năng đủ chi tiết cho BA/UX/DEV/QA cùng hiểu và thực hiện.
+5. **Tầng E — Build & Acceptance:** API/DB/UI, test cases, nghiệm thu, triển khai và bằng chứng hoàn thành.
+
+### Thứ tự đọc bắt buộc cho đội dự án
+`README → 00 Overview → E2E Flow → Module Overview → Module Detailed Flows → Feature Spec → API/Data/UI/Permission → Test & Acceptance`.
+
+### Mỗi Module phải có bộ tài liệu
+- `README.md`: Module Overview, phạm vi, actor, ownership, entities, dependencies, feature catalog.
+- `01-business-rules.md`: thuật ngữ, quy tắc, điều kiện, công thức, quyết định và TBD.
+- `02-workflows.md`: luồng chính, thay thế, ngoại lệ, swimlane và điểm bàn giao.
+- `03-state-machine.md`: trạng thái, transition, guard, actor, side effect, lỗi.
+- `04-data-model.md`: entity, field dictionary, quan hệ, constraint, ownership, audit.
+- `05-permissions.md`: role/action/data scope và maker-checker.
+- `06-integrations.md`: API, command, event, contract, idempotency, retry.
+- `features/`: một file cho mỗi Feature theo mẫu thống nhất.
+
+### Tiêu chuẩn để DEV nhận Feature
+DEV không nhận việc chỉ từ tên chức năng hoặc mockup. Feature phải có: mục tiêu và phạm vi; actor/quyền; precondition/postcondition; happy path; alternate/exception/recovery; business rules; state transitions; UI states; field validation; API request/response/error; data changes/migration; audit; concurrency/idempotency; security/NFR; test cases; Given/When/Then acceptance criteria; dependency và decision links.
+
+**Nguyên tắc:** phần nào chưa có căn cứ nghiệp vụ phải ghi `TBD + người quyết định + hạn chốt`; không tự điền bằng suy đoán của DEV.
+
 ---
 **Quay lại đầu trang:** [Taxi Management System — README](./README.md)
