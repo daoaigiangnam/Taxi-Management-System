@@ -1938,12 +1938,9 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 
 ## 12. Trình tự tiếp tục
 
-- Hoàn thiện TO.P1 sau khi kiểm tra lưu đồ gốc và xác nhận chính sách hiện tại.
-- Rà soát TO.P1–TO.P5 với nghiệp vụ hiện hành.
-- Đặc tả TO.P8 — đặt xe trước.
-- Đặc tả TO.P8 — đặt xe trước.
-- Đặc tả TO.P9 — cước phí đường dài.
-- Sau khi hoàn tất 9 quy trình, xây dựng bộ State Machine và ERD tổng thể dựa trên luồng đã xác nhận.
+- Rà soát TO.P1–TO.P9 với nghiệp vụ hiện hành và chốt các quyết định còn mở.
+- Xây dựng bộ State Machine tổng thể, chuẩn hóa trạng thái và sự kiện giữa Booking, Dispatch, Trip, Fare và Finance.
+- Xây dựng ERD tổng thể và ma trận truy vết yêu cầu → Module → Feature → API → Database → Test.
 
 ## 13. Lịch sử phiên bản
 
@@ -1953,4 +1950,8 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 | 0.2 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P2 — khách hàng sử dụng ứng dụng | Đang rà soát |
 | 0.3 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P3 — khách yêu cầu tại Điểm tiếp thị | Đang rà soát |
 | 0.4 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P4 — khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm | Đang rà soát |
-| 0.5 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P5 — khách hàng yêu cầu Taxi qua SMS | Đang rà soát |\n| 0.6 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P6 — khách hàng yêu cầu Taxi qua Chat | Đang rà soát |\n| 0.7 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P7 — khách hàng yêu cầu Taxi qua Web | Đang rà soát |\n| 0.8 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P8 — khách hàng đặt xe trước | Đang rà soát |\n\n| 0.9 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P9 — cước phí đường dài; hoàn thành bản đầu TO.P1–TO.P9 | Đang rà soát |\n
+| 0.5 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P5 — khách hàng yêu cầu Taxi qua SMS | Đang rà soát |
+| 0.6 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P6 — khách hàng yêu cầu Taxi qua Chat | Đang rà soát |
+| 0.7 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P7 — khách hàng yêu cầu Taxi qua Web | Đang rà soát |
+| 0.8 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P8 — khách hàng đặt xe trước | Đang rà soát |
+| 0.9 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P9 — cước phí đường dài; hoàn thành bản đầu TO.P1–TO.P9 | Đang rà soát |
