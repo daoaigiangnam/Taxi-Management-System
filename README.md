@@ -38,7 +38,7 @@
 - [API & Event Contracts](./03-CROSS-CUTTING/03-api-and-event-contracts.md)
 - [Security, IAM & Audit](./03-CROSS-CUTTING/04-security-iam-and-audit.md)
 - [Non-Functional Requirements (NFR)](./03-CROSS-CUTTING/05-non-functional-requirements.md)
-- Delivery Governance: sẽ bổ sung và liên kết tại đây sau khi xác nhận cấu trúc.
+- [Delivery Governance — Quản trị phát triển và triển khai](./03-CROSS-CUTTING/06-delivery-governance.md)
 
 ## 4. Sơ đồ hệ thống
 Quy trình nghiệp vụ chuẩn:
