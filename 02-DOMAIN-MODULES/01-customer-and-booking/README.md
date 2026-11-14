@@ -18,7 +18,7 @@ Customer, ContactPoint, Booking, BookingStop, BookingRevision, QuoteReference.
 | [BKG-005](../../docs/05-FEATURE-SPECS/M01-customer-and-booking/BKG-005-booking-amendment-and-change-request.md) | Booking revision/change request | P1 | Draft v0.1 |
 | [BKG-006](../../docs/05-FEATURE-SPECS/M01-customer-and-booking/BKG-006-cancel-booking-and-cancellation-policy.md) | Cancel booking/policy | P1 | Draft v0.1 |
 | [BKG-007](../../docs/05-FEATURE-SPECS/M01-customer-and-booking/BKG-007-duplicate-booking-detection-and-warning.md) | Duplicate detection/warning | P2 | Draft v0.1 |
-| BKG-008 | Search/detail/timeline | P0 | Planned |
+| [BKG-008](../../docs/05-FEATURE-SPECS/M01-customer-and-booking/BKG-008-booking-search-detail-and-timeline.md) | Search/detail/timeline | P0 | Draft v0.1 |
 | BKG-009 | Quote request/reference | P1 | Planned |
 
 ## Workflow
