@@ -90,20 +90,21 @@ Cần xác nhận tối thiểu:
 
 ## 5. Ma trận khảo sát theo Module
 
-Các dòng dưới đây là danh mục cần khảo sát, không phải xác nhận rằng hệ thống hiện tại đã có hoặc chưa có chức năng.
+Danh mục khảo sát được chuẩn hóa theo tài liệu 03. Các dòng dưới đây là danh mục cần khảo sát, không phải xác nhận hệ thống hiện tại đã có hoặc chưa có chức năng.
 
 | Mã | Module/năng lực | Hạng mục cần khảo sát | Trạng thái | Kết luận khoảng cách |
 |---|---|---|---|---|
 | M01 | Khách hàng và Đặt xe | Hồ sơ khách hàng, địa chỉ, tiếp nhận đa kênh, tạo/sửa/hủy Booking, đặt trước, mã yêu cầu, chống trùng | Chưa khảo sát | Chưa kết luận |
-| M02 | Đội xe và Đối tác | Hồ sơ tài xế, xe, chủ xe, đơn vị đối tác, giấy tờ, trạng thái, điều kiện hoạt động | Chưa khảo sát | Chưa kết luận |
-| M03 | Điều phối và Hàng đợi | Tìm xe, Unicast/Broadcast, tự đăng ký, chỉ định thủ công, chống tranh chấp, hàng đợi, điều phối lại | Chưa khảo sát | Chưa kết luận |
+| M02 | Đội xe và Đối tác | Hồ sơ tài xế, xe, chủ xe, đơn vị đối tác, giấy tờ, trạng thái, điều kiện hoạt động và hợp đồng | Chưa khảo sát | Chưa kết luận |
+| M03 | Điều phối và Hàng đợi | Tìm xe, Unicast/Broadcast, tự đăng ký, chỉ định thủ công, chống tranh chấp, FIFO, điểm tiếp thị và điều phối lại | Chưa khảo sát | Chưa kết luận |
 | M04 | Ứng dụng Tài xế và Chuyến đi | Đến đón, xác nhận khách, bắt đầu/kết thúc Trip, GPS, hành trình, hủy và sự cố | Chưa khảo sát | Chưa kết luận |
-| M05 | Giá cước và Thanh toán | Biểu giá, đồng hồ, đường dài, phụ trội, hóa đơn, tiền mặt/thẻ/voucher, hoàn tiền và đối soát | Chưa khảo sát | Chưa kết luận |
-| M06 | Điểm tiếp thị và Khu vực sắp tài | Danh mục điểm, FIFO, sức chứa, lượt tài xế, thời gian đến lượt, quyền can thiệp | Chưa khảo sát | Chưa kết luận |
-| M07 | Tổng đài và Trung tâm kiểm soát | Màn hình điện thoại viên, nhận diện cuộc gọi, danh sách chờ, bản đồ xe, can thiệp điều hành | Chưa khảo sát | Chưa kết luận |
-| M08 | Chăm sóc khách hàng và Quản lý sự cố | Đánh giá, khiếu nại, hành lý thất lạc, tai nạn, sự cố kỹ thuật/an ninh | Chưa khảo sát | Chưa kết luận |
-| M09 | Báo cáo và Phân tích | Báo cáo nhu cầu, doanh thu, vận hành, hiệu suất, SLA, phân tích và dự báo | Chưa khảo sát | Chưa kết luận |
-| M10 | Nền tảng, Tích hợp và Vận hành CNTT | Tài khoản, phân quyền, nhật ký, API, CRM/HR/Kế toán, giám sát, sao lưu, bảo mật, hiệu năng | Chưa khảo sát | Chưa kết luận |
+| M05 | Giá cước và Thanh toán | Biểu giá, tính cước, đường dài, phụ trội, hóa đơn, tiền mặt/thẻ/voucher, hoàn tiền | Chưa khảo sát | Chưa kết luận |
+| M06 | Tài chính và Quyết toán | Sổ cái, doanh thu, công nợ, nghĩa vụ đối tác, đối soát, chi trả và điều chỉnh | Chưa khảo sát | Chưa kết luận |
+| M07 | Trung tâm Điều hành và Chăm sóc khách hàng | Bảng điều hành, bản đồ, hàng đợi giám sát, can thiệp, khiếu nại và SLA | Chưa khảo sát | Chưa kết luận |
+| M08 | Nền tảng, Phân quyền và Kiểm toán | Tài khoản, phân quyền, phạm vi dữ liệu, nhật ký, cấu hình, giám sát, sao lưu và bảo mật | Chưa khảo sát | Chưa kết luận |
+| M09 | Tích hợp và Thông báo | Bản đồ, SMS/Voice/Push/Email, cổng đối tác, thanh toán và tích hợp hệ thống doanh nghiệp | Chưa khảo sát | Chưa kết luận |
+| M10 | Báo cáo và Phân tích | Báo cáo nhu cầu, doanh thu, vận hành, hiệu suất, SLA, KPI và phân tích | Chưa khảo sát | Chưa kết luận |
+
 
 ## 6. Ma trận đối chiếu quy trình TO.P1–TO.P9
 
