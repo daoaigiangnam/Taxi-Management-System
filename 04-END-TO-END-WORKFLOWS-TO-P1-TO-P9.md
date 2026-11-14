@@ -1,8 +1,8 @@
 # 04 — QUY TRÌNH NGHIỆP VỤ ĐẦU CUỐI VÀ SWIMLANE TO.P1–TO.P9
 
 **Mã tài liệu:** TAXI-BIZ-004  
-**Phiên bản:** 0.3  
-**Trạng thái:** ĐANG XÂY DỰNG — TO.P1–TO.P3 ĐÃ ĐẶC TẢ BẢN ĐẦU; TO.P4–TO.P9 CHƯA ĐẶC TẢ  
+**Phiên bản:** 0.4  
+**Trạng thái:** ĐANG XÂY DỰNG — TO.P1–TO.P4 ĐÃ ĐẶC TẢ BẢN ĐẦU; TO.P5–TO.P9 CHƯA ĐẶC TẢ  
 **Nguồn nghiệp vụ:** *MLG_Luu do va mo ta quy trinh & Yeu cau _Dieu hanh taxi_v3.docx*, KPMG, 2015.
 
 > Tài liệu này bám theo mã bước, vai trò và mô tả trong tài liệu KPMG. Không xem quy trình năm 2015 là chính sách hiện hành. Những nội dung KPMG để [xxx], yêu cầu Mai Linh tự quy định hoặc chưa đủ dữ liệu đều được giữ ở trạng thái cần xác nhận. Phần diễn giải thiết kế hệ thống được tách riêng khỏi nội dung nguồn.
@@ -14,7 +14,7 @@
 | TO.P1 | Khách hàng yêu cầu Taxi qua Tổng đài | Đã dựng luồng và swimlane bản đầu |
 | TO.P2 | Khách hàng sử dụng Ứng dụng | Đã dựng luồng và swimlane bản đầu |
 | TO.P3 | Khách yêu cầu tại Điểm tiếp thị có nhân viên điều hành điểm | Đã dựng luồng và swimlane bản đầu |
-| TO.P4 | Khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm | Chưa đặc tả |
+| TO.P4 | Khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm | Đã dựng luồng và swimlane bản đầu |
 | TO.P5 | Khách hàng yêu cầu Taxi qua SMS | Chưa đặc tả |
 | TO.P6 | Khách hàng yêu cầu Taxi qua Chat | Chưa đặc tả |
 | TO.P7 | Khách hàng yêu cầu Taxi qua Web | Chưa đặc tả |
@@ -622,7 +622,192 @@ TO.P3 chỉ đủ điều kiện chuyển sang đặc tả Feature khi:
 7. Có test case cho điểm không có xe, phát Unicast/Broadcast, xe vào queue, chỉ định bị từ chối, quá hạn 60 giây, xe không phù hợp loại xe, khách lên xe, tính cước và thanh toán.
 
 
-## 5. Tiêu chí hoàn thành một quy trình
+
+
+## 5. TO.P4 — Khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm
+
+### 5.1. Mục tiêu và phạm vi theo KPMG
+
+Quy trình mô tả việc điều hành xe khi khách hàng yêu cầu đón tại khu vực sắp tài do Mai Linh định nghĩa trên hệ thống, nhưng không có nhân viên điều hành điểm. Phạm vi từ lúc tiếp nhận yêu cầu đến khi khách hàng thanh toán dịch vụ. Chủ quy trình được nêu là Tổng đài Điều hành và Tài xế.
+
+Khách hàng có thể yêu cầu qua điện thoại, chat hoặc SMS. Nếu điểm đón không thuộc khu vực sắp tài được cấu hình, yêu cầu được chuyển về quy trình tiếp nhận tương ứng (TO.P1, TO.P2, TO.P5, TO.P6 hoặc TO.P7).
+
+### 5.2. Vai trò tham gia
+
+| Vai trò | Trách nhiệm được mô tả trong nguồn |
+|---|---|
+| Khách hàng | Cung cấp điểm đón, loại xe, hiệu xe, số điện thoại và thông tin thêm; lên xe, thông báo điểm đến, thanh toán và phản hồi |
+| Tổng đài Điều hành | Xác định điểm đón có thuộc khu vực sắp tài; kiểm tra xe sẵn có; phát yêu cầu Unicast/Broadcast; chỉ định xe về khu vực; điều xe theo thứ tự sắp tài |
+| Tài xế | Xem yêu cầu, chạy đến khu vực và đăng ký sắp tài; nhận/từ chối chỉ định; xác nhận và đến khu vực; nhận lượt đón khách; thực hiện chuyến |
+| Hệ thống | Quản lý danh mục khu vực sắp tài; phát yêu cầu; ghi nhận đăng ký, vị trí, thứ tự queue, chỉ định/từ chối; hỗ trợ hành trình, hóa đơn, thanh toán và báo cáo |
+| Tổng đài viên / kênh tiếp nhận | Tiếp nhận nội dung khách qua điện thoại, chat hoặc SMS theo quy trình/kênh tương ứng; KPMG không mô tả chi tiết thao tác của từng kênh trong TO.P4 |
+
+### 5.3. Luồng tổng thể
+
+```mermaid
+flowchart TD
+ A["Khách yêu cầu taxi qua điện thoại, chat hoặc SMS"] --> B["Xác định điểm đón"]
+ B --> C{"Điểm đón thuộc khu vực sắp tài?"}
+ C -->|Không| D["Chuyển sang TO.P1, TO.P2, TO.P5, TO.P6 hoặc TO.P7"]
+ C -->|Có| E{"Có xe sẵn tại khu vực?"}
+ E -->|Có| K["Xác nhận xe và chuyển sang bước đến khu vực"]
+ E -->|Không| F["Phát yêu cầu Unicast hoặc Broadcast"]
+ F --> G["Tài xế xem yêu cầu, đến khu vực và đăng ký sắp tài"]
+ F --> H["Nếu chờ quá lâu, Tổng đài chỉ định xe về khu vực"]
+ H --> I{"Tài xế nhận chỉ định?"}
+ I -->|Không| H
+ I -->|Có| J["Tài xế xác nhận và chạy về khu vực"]
+ G --> L["Ghi nhận thứ tự đăng ký sắp tài"]
+ J --> L
+ K --> M["Điều xe đón khách theo thứ tự sắp tài"]
+ L --> M
+ M --> N{"Tài xế nhận lượt trong thời hạn?"}
+ N -->|Không| M
+ N -->|Có| O["Khách lên xe và thông báo điểm đến"]
+ O --> P["Tài xế bấm đồng hồ, nhập điểm đến"]
+ P --> Q{"Khách chọn cước cố định đường dài?"}
+ Q -->|Có| R["Chuyển sang TO.P9"]
+ Q -->|Không| S["Thực hiện chuyến theo cước đồng hồ"]
+ R --> T["Kết thúc hành trình và lập hóa đơn"]
+ S --> T
+ T --> U["Khách thanh toán"]
+ U --> V["Khách phản hồi chất lượng dịch vụ"]
+```
+
+**Điểm cần đọc đúng:** TO.P4.3 nêu trường hợp có xe sẵn thì chuyển đến TO.P4.8; TO.P4.8 là tài xế xác nhận chỉ định và chạy về khu vực. KPMG không giải thích rõ “xe sẵn” đã ở trong khu vực hay cần thực hiện thao tác xác nhận nào. Sơ đồ nghiệp vụ phía trên giữ nguyên nhánh nguồn và đánh dấu đây là nội dung cần xác nhận, không tự suy diễn rằng xe đã có sẵn thì được bỏ qua toàn bộ kiểm tra trạng thái.
+
+### 5.4. Diễn giải các bước TO.P4.1–TO.P4.16 theo KPMG
+
+| Mã bước | Hoạt động | Vai trò theo nguồn | Nội dung được mô tả trong KPMG |
+|---|---|---|---|
+| TO.P4.1 | Yêu cầu dịch vụ taxi | Khách hàng | Khách yêu cầu qua điện thoại, chat hoặc SMS. Thông tin gồm địa điểm đón; loại xe 7 chỗ/4 chỗ; hiệu xe; số điện thoại di động hoặc điện thoại bàn; thông tin thêm nếu có |
+| TO.P4.2 | Điểm đón khách nằm trong khu vực sắp tài? | Tổng đài Điều hành | Nếu thuộc khu vực sắp tài thì sang TO.P4.3. Nếu không thuộc thì chuyển sang quy trình tiếp nhận tương ứng: TO.P1, TO.P2, TO.P5, TO.P6 hoặc TO.P7 |
+| TO.P4.3 | Có sẵn xe tại khu vực sắp tài? | Tổng đài Điều hành | Nếu có xe sẵn thì chuyển sang TO.P4.8. Nếu không có thì tiếp tục TO.P4.4 |
+| TO.P4.4 | Phát yêu cầu xe theo Unicast/Broadcast | Tổng đài Điều hành | Unicast mặc định, phát đến xe trống trong bán kính [xxx] km và có thể điều chỉnh. Broadcast phát đến tất cả xe trống toàn hệ thống; Tổng đài kiểm soát bật/tắt trong tình huống đặc biệt như cao điểm hoặc thiếu xe cục bộ |
+| TO.P4.5 | Chạy xe đến khu vực sắp tài và đăng ký sắp tài | Tài xế | Tài xế thấy yêu cầu, chạy đến khu vực và đăng ký sắp tài. KPMG nêu xe trong bán kính [100] m mới được đăng ký; tham số có thể điều chỉnh |
+| TO.P4.6 | Chỉ định xe đến khu vực sắp tài | Tổng đài Điều hành | Khi khu vực chờ xe quá lâu, tính từ lúc Tổng đài phát yêu cầu, hệ thống thực hiện chỉ định xe về khu vực |
+| TO.P4.7 | Tài xế nhận chỉ định về khu vực sắp tài? | Tài xế | Nếu đồng ý thì sang TO.P4.8. Nếu từ chối thì quay lại TO.P4.6 để Tổng đài chỉ định xe khác gần đó. Hệ thống ghi nhận việc từ chối và định kỳ sinh báo cáo tài xế từ chối chỉ định |
+| TO.P4.8 | Đến khu vực sắp tài | Tài xế | Tài xế xác nhận chỉ định qua ứng dụng Mai Linh Taxi và chạy xe về khu vực sắp tài |
+| TO.P4.9 | Điều xe đón khách theo thứ tự sắp tài | Tổng đài Điều hành | Tổng đài điều xe theo thứ tự sắp tài do hệ thống lưu và hiển thị theo thứ tự tài xế đăng ký. Thời gian tối đa nhận lượt là [60 giây]; quá thời gian thì chuyển lượt sang tài xế tiếp theo. Tham số có thể điều chỉnh |
+| TO.P4.10 | Khách hàng lên xe, thông báo điểm đến | Khách hàng | Khách lên xe và thông báo điểm đến cho tài xế |
+| TO.P4.11 | Tài xế bấm đồng hồ, nhập điểm đến vào ứng dụng | Tài xế và khách hàng | Tài xế bấm đồng hồ, nhập điểm đến để ứng dụng hướng dẫn đường; thông báo lộ trình cho khách. Nếu khách không thay đổi thì tài xế đi theo hướng dẫn. Khi khách yêu cầu, tài xế có thể hiển thị cước ước tính |
+| TO.P4.12 | Có thể áp dụng cước phí đường dài? | Tài xế / Hệ thống | Sau khi nhập điểm đến, nếu đủ điều kiện thì hệ thống hiển thị cước đường dài. Tài xế hỏi khách chọn cước cố định đường dài hay cước đồng hồ. Chọn cước đường dài thì chuyển TO.P9; chọn cước đồng hồ thì sang TO.P4.13 |
+| TO.P4.13 | Thực hiện dịch vụ chở khách đến nơi yêu cầu | Tài xế | Tài xế chở khách đến nơi; hành trình được lưu vết bởi hệ thống quản lý hành trình cài đặt trên xe |
+| TO.P4.14 | Kết thúc hành trình và xuất hóa đơn | Tài xế | Hóa đơn gồm cước đồng hồ; cước cố định đường dài và phụ thu vượt lộ trình nếu có; phí cầu đường do tài xế nhập; tiền tip do tài xế nhập; số tài/MSNV; điểm đầu/cuối; ngày giờ |
+| TO.P4.15 | Thanh toán | Khách hàng | Khách kiểm tra hóa đơn và thanh toán. KPMG 2015 liệt kê tiền mặt, thẻ trả sau MCC, thẻ tín dụng/thẻ ATM và voucher; nguồn còn mô tả chứng từ giấy kèm theo |
+| TO.P4.16 | Khách hàng phản hồi chất lượng dịch vụ | Khách hàng | Chấm điểm dịch vụ là bắt buộc theo nguồn; ý kiến góp ý/phàn nàn chi tiết là tùy chọn. Kênh được nêu gồm ứng dụng Mai Linh Taxi và gọi tổng đài |
+
+### 5.5. Swimlane theo vai trò
+
+```mermaid
+flowchart TB
+ subgraph KH["Khách hàng"]
+  A1["Yêu cầu taxi"] --> A2["Lên xe và thông báo điểm đến"]
+  A2 --> A3["Thanh toán và phản hồi"]
+ end
+ subgraph DH["Tổng đài Điều hành"]
+  B1["Xác định khu vực sắp tài"] --> B2{"Có xe sẵn?"}
+  B2 -->|Không| B3["Phát yêu cầu Unicast / Broadcast"]
+  B3 --> B4["Theo dõi thời gian chờ xe"]
+  B4 --> B5["Chỉ định xe khi chờ quá lâu"]
+  B5 --> B6{"Tài xế nhận chỉ định?"}
+  B6 -->|Từ chối| B5
+  B6 -->|Đồng ý| B7["Theo dõi hàng đợi và điều xe FIFO"]
+  B2 -->|Có| B7
+ end
+ subgraph TX["Tài xế"]
+  C1["Xem yêu cầu và đến khu vực"] --> C2["Đăng ký sắp tài"]
+  C3["Nhận chỉ định"] --> C4["Xác nhận và chạy về khu vực"]
+  C2 --> C5["Chờ đến lượt"]
+  C4 --> C5
+  C5 --> C6["Nhận khách và thực hiện chuyến"]
+  C6 --> C7["Kết thúc chuyến, lập hóa đơn"]
+ end
+ A1 --> B1
+ B3 --> C1
+ B5 --> C3
+ B7 --> C5
+ C7 --> A3
+```
+
+Swimlane là sơ đồ trách nhiệm khái quát. Trường hợp xe sẵn tại khu vực và quan hệ giữa TO.P4.3 với TO.P4.8 cần được nghiệp vụ xác nhận trước khi chốt luồng triển khai.
+
+### 5.6. Dữ liệu đầu vào và đầu ra
+
+| Nhóm dữ liệu | Trường/nội dung được nêu trong nguồn |
+|---|---|
+| Yêu cầu Booking | Điểm đón, loại xe 4/7 chỗ, hiệu xe, số điện thoại di động/điện thoại bàn, thông tin thêm |
+| Phân vùng | Khu vực sắp tài do Mai Linh định nghĩa trên hệ thống; điểm đón và kết quả xác định thuộc/không thuộc vùng |
+| Phát yêu cầu | Khu vực đích, chế độ Unicast/Broadcast, bán kính phát |
+| Xe đăng ký sắp tài | Xe/tài xế, vị trí, thời điểm đăng ký và thứ tự queue |
+| Chỉ định | Xe được chỉ định, thời điểm phát lệnh, kết quả nhận/từ chối và lịch sử từ chối |
+| Điều xe | Thứ tự hàng đợi; thời hạn nhận lượt [60] giây |
+| Trip | Điểm đến, đồng hồ, lộ trình và dữ liệu hành trình |
+| Hóa đơn | Cước đồng hồ/cố định đường dài, phụ thu, phí cầu đường, tip, số tài/MSNV, điểm đầu/cuối, ngày giờ |
+| Kết quả | Phương thức và kết quả thanh toán; điểm đánh giá; ý kiến khách hàng nếu có |
+
+### 5.7. Điểm bàn giao Module theo kiến trúc đề xuất
+
+| Hoạt động nghiệp vụ | Module sở hữu/đảm nhiệm | Bàn giao |
+|---|---|---|
+| Tiếp nhận Booking từ kênh điện thoại/chat/SMS | M01 — Booking phối hợp M09 — Integration | Booking chuẩn hóa có điểm đón và kênh nguồn |
+| Danh mục, tọa độ và vùng địa lý khu vực sắp tài | M03 — Dispatch & Queue | Khu vực sắp tài đang hoạt động và cấu hình vùng |
+| Hồ sơ, trạng thái, vị trí và khả năng phục vụ của xe/tài xế | M02 — Fleet/Driver | Danh sách nguồn lực đủ điều kiện |
+| Phát yêu cầu, Unicast/Broadcast, đăng ký queue, chỉ định, FIFO và chuyển lượt | M03 — Dispatch & Queue | Offer, đăng ký queue và Assignment |
+| Đến đón, bắt đầu/kết thúc Trip, hành trình | M04 — Trip | Sự kiện Trip và dữ liệu hành trình |
+| Biểu giá, tính cước, hóa đơn và thanh toán | M05 — Fare & Payment | Kết quả tính cước và giao dịch |
+| Doanh thu, công nợ và đối soát | M06 — Finance | Dữ liệu tài chính đã xác minh, phân tách DIRECT/PARTNER |
+| Màn hình giám sát và can thiệp điều hành | M07 — Control Center | Lệnh điều hành có phân quyền và nhật ký |
+| Người dùng, vai trò, quyền và nhật ký truy cập | M08 — Identity & Access | Quyền thao tác và dấu vết kiểm toán |
+| Kết nối tổng đài, SMS, Chat và thông báo | M09 — Integration | Sự kiện/kết quả giao tiếp với kênh |
+| Báo cáo xe từ chối chỉ định, nhu cầu và hiệu quả vận hành | M10 — Reporting | Báo cáo từ dữ liệu Module nguồn |
+
+### 5.8. Các điểm cần Mai Linh xác nhận
+
+| Mã quyết định | Nội dung cần xác nhận | Căn cứ KPMG |
+|---|---|---|
+| P4-DEC-01 | Danh sách khu vực sắp tài, tọa độ/ranh giới địa lý, trạng thái hoạt động và đơn vị quản lý | Mô tả TO.P4: khu vực do Mai Linh định nghĩa trên hệ thống |
+| P4-DEC-02 | Kênh nào được phép tạo yêu cầu tại khu vực sắp tài; cách xác định đúng khu vực khi khách gọi/chat/SMS | TO.P4.1–P4.2 |
+| P4-DEC-03 | Quy tắc xử lý khi điểm đón nằm ngoài khu vực sắp tài và cách chuyển tiếp Booking giữa các quy trình/kênh | TO.P4.2 |
+| P4-DEC-04 | Định nghĩa “có sẵn xe tại khu vực”; điều kiện xe hợp lệ và ý nghĩa chuyển TO.P4.3 sang TO.P4.8 | TO.P4.3, TO.P4.8 |
+| P4-DEC-05 | Bán kính Unicast; KPMG để [xxx] km | TO.P4.4 |
+| P4-DEC-06 | Có tiếp tục dùng Broadcast toàn hệ thống và ai có quyền bật/tắt | TO.P4.4 |
+| P4-DEC-07 | Bán kính [100] m cho phép đăng ký sắp tài; cách xác minh vị trí GPS và sai số cho phép | TO.P4.5 |
+| P4-DEC-08 | Ngưỡng “chờ quá lâu” tính từ lúc phát yêu cầu để kích hoạt chỉ định xe | TO.P4.6 |
+| P4-DEC-09 | Tiêu chí chọn xe chỉ định: khoảng cách đường thực tế, trạng thái, loại xe, vùng hoạt động và giới hạn số lần từ chối | TO.P4.6–P4.7 |
+| P4-DEC-10 | Thời gian phản hồi chỉ định, số lần từ chối và hậu quả khi tài xế liên tục từ chối | TO.P4.7 |
+| P4-DEC-11 | Quy tắc FIFO, điều kiện đủ tư cách vào queue và xử lý khi xe rời vùng/ mất GPS | TO.P4.5, TO.P4.9 |
+| P4-DEC-12 | Thời hạn [60 giây] nhận lượt; thời điểm bắt đầu tính và cách xử lý khi hết hạn | TO.P4.9 |
+| P4-DEC-13 | Xử lý khi xe đầu queue không phù hợp loại xe khách yêu cầu hoặc không thể nhận cuốc | TO.P4.1, TO.P4.9 |
+| P4-DEC-14 | Ngưỡng, biểu giá và điều kiện cước đường dài; phương thức thanh toán còn hiệu lực | TO.P4.12–P4.15 |
+| P4-DEC-15 | Kênh đánh giá, thang điểm, tính bắt buộc và quy trình xử lý phản hồi | TO.P4.16 |
+
+### 5.9. Diễn giải thiết kế hệ thống — tách biệt với yêu cầu nguồn
+
+Các nội dung sau là đề xuất thiết kế, không phải quy định trực tiếp của KPMG:
+- Mỗi khu vực sắp tài nên có mã định danh, tên, ranh giới địa lý (polygon/geofence), trạng thái hoạt động, giờ áp dụng, loại xe phục vụ và cấu hình điều phối.
+- Việc xác định điểm đón thuộc khu vực phải dùng tọa độ đã chuẩn hóa; cần có phương án khi địa chỉ không định vị được hoặc GPS không chính xác.
+- “Xe sẵn tại khu vực”, “xe được chỉ định chạy về khu vực”, “xe đã đến khu vực” và “xe đăng ký queue” phải là các điều kiện/sự kiện riêng, không gộp thành một trạng thái.
+- Queue phải lưu thời điểm đăng ký, thứ tự, trạng thái, lần chuyển lượt và lý do bỏ lượt; mọi thao tác điều chỉnh thủ công phải có người thực hiện và nhật ký.
+- Không được mặc định việc tài xế nhận chỉ định về khu vực đồng nghĩa với được phân công một Booking cụ thể. Đây là luồng đưa xe đến vùng chờ, khác với Assignment đón một khách.
+- Khi chuyển lượt do hết [60 giây], hệ thống cần ghi nhận lượt bị bỏ qua và giữ lịch sử để có thể giải trình; quy tắc quay lại cuối hàng hay giữ vị trí phải do nghiệp vụ phê duyệt.
+- DIRECT và PARTNER dùng chung năng lực Dispatch/Queue nhưng Booking, hợp đồng, doanh thu, công nợ và quyết toán phải giữ đúng phạm vi đối tác/đơn vị sở hữu theo kiến trúc chung.
+- Mọi ngưỡng khoảng cách/thời gian phải là cấu hình có hiệu lực theo khu vực và phiên bản, không hard-code từ tài liệu KPMG 2015.
+
+### 5.10. Tiêu chí hoàn thành TO.P4
+
+TO.P4 chỉ đủ điều kiện chuyển sang đặc tả Feature khi:
+1. Danh mục khu vực sắp tài và ranh giới địa lý được xác nhận.
+2. Chốt cách nhận diện điểm đón thuộc/không thuộc khu vực và cách chuyển Booking sang quy trình phù hợp.
+3. Làm rõ nhánh “có sẵn xe” tại TO.P4.3 và quan hệ với TO.P4.8.
+4. Chốt Unicast/Broadcast, bán kính phát, bán kính đăng ký và điều kiện chỉ định xe.
+5. Chốt cách đo thời gian chờ lâu, thời hạn phản hồi chỉ định và cách xử lý từ chối.
+6. Chốt FIFO, điều kiện vào queue, thời hạn nhận lượt và quy tắc chuyển lượt.
+7. Chốt biểu giá đường dài, thanh toán và phản hồi khách theo chính sách hiện hành.
+8. Có test case cho điểm đón trong/ngoài khu vực, có/không có xe, Unicast/Broadcast, GPS ngoài bán kính, từ chối chỉ định, mất kết nối, FIFO, quá hạn nhận lượt, loại xe không phù hợp, Trip, hóa đơn và thanh toán.
+
+
+## 6. Tiêu chí hoàn thành một quy trình
 
 Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặc tả tính năng khi:
 1. Có chủ quy trình và các vai trò tham gia được xác nhận.
@@ -633,20 +818,20 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 6. Có truy vết về yêu cầu nguồn KPMG và quyết định hiện hành.
 7. Có kịch bản kiểm thử và tiêu chí nghiệm thu.
 
-## 6. Trình tự tiếp tục
+## 7. Trình tự tiếp tục
 
 - Hoàn thiện TO.P1 sau khi kiểm tra lưu đồ gốc và xác nhận chính sách hiện tại.
-- Rà soát TO.P1–TO.P3 với nghiệp vụ hiện hành; sau đó đặc tả TO.P4 — khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm.
-- Đặc tả TO.P4 — khu vực sắp tài không có nhân viên điều hành điểm.
+- Rà soát TO.P1–TO.P4 với nghiệp vụ hiện hành.
 - Đặc tả TO.P5, TO.P6, TO.P7 — SMS, Chat, Web.
 - Đặc tả TO.P8 — đặt xe trước.
 - Đặc tả TO.P9 — cước phí đường dài.
 - Sau khi hoàn tất 9 quy trình, xây dựng bộ State Machine và ERD tổng thể dựa trên luồng đã xác nhận.
 
-## 7. Lịch sử phiên bản
+## 8. Lịch sử phiên bản
 
 | Phiên bản | Ngày | Nội dung | Trạng thái |
 |---|---|---|---|
 | 0.1 | 2026-11-14 | Tạo danh mục TO.P1–TO.P9; đặc tả bản đầu TO.P1 từ tài liệu KPMG | Đang rà soát |
 | 0.2 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P2 — khách hàng sử dụng ứng dụng | Đang rà soát |
 | 0.3 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P3 — khách yêu cầu tại Điểm tiếp thị | Đang rà soát |
+| 0.4 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P4 — khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm | Đang rà soát |
