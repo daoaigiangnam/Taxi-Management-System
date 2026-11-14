@@ -20,16 +20,16 @@
 
 | Module | Phạm vi | Tài liệu chi tiết |
 |---|---|---|
-| M01 — Customer & Booking | Khách hàng, tiếp nhận yêu cầu, đặt/sửa/hủy xe | [M01](./02-DOMAIN-MODULES/01-customer-and-booking/README.md) |
-| M02 — Fleet & Partner | Tài xế, xe, đội xe, đối tác, hợp đồng | [M02](./02-DOMAIN-MODULES/02-fleet-and-partner/README.md) |
-| M03 — Dispatch | Eligibility, Candidate, Ranking, Offer, Assignment | [M03](./02-DOMAIN-MODULES/03-dispatch/README.md) |
-| M04 — Driver App & Trip | Ứng dụng tài xế, GPS, hành trình, sự cố | [M04](./02-DOMAIN-MODULES/04-driver-app-and-trip/README.md) |
-| M05 — Pricing & Payment | Biểu giá, tính cước, thu/hoàn tiền | [M05](./02-DOMAIN-MODULES/05-pricing-and-payment/README.md) |
-| M06 — Finance & Settlement | Ledger, công nợ, đối soát, thanh toán đối tác | [M06](./02-DOMAIN-MODULES/06-finance-and-settlement/README.md) |
-| M07 — Control Tower & CSKH | Điều hành, giám sát, khiếu nại, SLA | [M07](./02-DOMAIN-MODULES/07-control-tower-and-customer-service/README.md) |
-| M08 — Platform, IAM & Audit | Người dùng, phân quyền, cấu hình, nhật ký | [M08](./02-DOMAIN-MODULES/08-platform-iam-audit/README.md) |
-| M09 — Integration & Notification | Maps, SMS, Voice, Payment, Partner API | [M09](./02-DOMAIN-MODULES/09-integration-and-notification/README.md) |
-| M10 — Reporting & Analytics | KPI, Dashboard, báo cáo | [M10](./02-DOMAIN-MODULES/10-reporting-and-analytics/README.md) |
+| M01 — Khách hàng và Đặt xe | Khách hàng, tiếp nhận yêu cầu, đặt/sửa/hủy xe | [M01](./02-DOMAIN-MODULES/01-customer-and-booking/README.md) |
+| M02 — Đội xe và Đối tác | Tài xế, xe, đội xe, đối tác, hợp đồng | [M02](./02-DOMAIN-MODULES/02-fleet-and-partner/README.md) |
+| M03 — Điều phối và Hàng đợi | Điều kiện xe, ứng viên, xếp hạng, lời mời và phân công | [M03](./02-DOMAIN-MODULES/03-dispatch/README.md) |
+| M04 — Ứng dụng Tài xế và Chuyến đi | Tác nghiệp tài xế, GPS, hành trình, sự cố | [M04](./02-DOMAIN-MODULES/04-driver-app-and-trip/README.md) |
+| M05 — Giá cước và Thanh toán | Biểu giá, tính cước, thu/hoàn tiền | [M05](./02-DOMAIN-MODULES/05-pricing-and-payment/README.md) |
+| M06 — Tài chính và Quyết toán | Sổ cái, công nợ, đối soát, thanh toán đối tác | [M06](./02-DOMAIN-MODULES/06-finance-and-settlement/README.md) |
+| M07 — Trung tâm Điều hành và Chăm sóc khách hàng | Giám sát, khiếu nại, SLA | [M07](./02-DOMAIN-MODULES/07-control-tower-and-customer-service/README.md) |
+| M08 — Nền tảng, Phân quyền và Kiểm toán | Người dùng, quyền, cấu hình, nhật ký | [M08](./02-DOMAIN-MODULES/08-platform-iam-audit/README.md) |
+| M09 — Tích hợp và Thông báo | Bản đồ, SMS, thoại, thanh toán, API đối tác | [M09](./02-DOMAIN-MODULES/09-integration-and-notification/README.md) |
+| M10 — Báo cáo và Phân tích | KPI, bảng điều hành, báo cáo | [M10](./02-DOMAIN-MODULES/10-reporting-and-analytics/README.md) |
 
 ## 3. Thiết kế xuyên Module
 - [State Machines & Transition Rules](./03-CROSS-CUTTING/01-state-machines-and-transition-rules.md)
