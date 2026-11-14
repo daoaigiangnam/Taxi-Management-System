@@ -74,7 +74,7 @@ Theo Feature Catalog hiện có trong [M01 README](../../02-DOMAIN-MODULES/01-cu
 | [BKG-005](./M01-customer-and-booking/BKG-005-booking-amendment-and-change-request.md) | Sửa đổi Booking / yêu cầu thay đổi | P1 | DRAFT v0.1 |
 | [BKG-006](./M01-customer-and-booking/BKG-006-cancel-booking-and-cancellation-policy.md) | Hủy Booking / chính sách hủy | P1 | DRAFT v0.1 |
 | [BKG-007](./M01-customer-and-booking/BKG-007-duplicate-booking-detection-and-warning.md) | Phát hiện/cảnh báo Booking trùng | P2 | DRAFT v0.1 |
-| BKG-008 | Tra cứu/chi tiết/dòng thời gian Booking | P0 | PLANNED |
+| [BKG-008](./M01-customer-and-booking/BKG-008-booking-search-detail-and-timeline.md) | Tra cứu/chi tiết/dòng thời gian Booking | P0 | DRAFT v0.1 |
 | BKG-009 | Yêu cầu/tham chiếu báo giá | P1 | PLANNED |
 
 **Lưu ý:** Priority và tên Feature được giữ theo catalog M01 hiện tại. Đây chưa phải xác nhận rằng toàn bộ chính sách, field và quy tắc đã được nghiệp vụ phê duyệt.
