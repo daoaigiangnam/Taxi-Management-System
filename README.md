@@ -7,6 +7,7 @@
 **Branch:** `main` · **Documentation baseline:** 0.1 · **Status:** DRAFT — cần Business/Architecture review.
 
 ## 1. Đọc từ đây
+- **[02 — Khảo sát hiện trạng và phân tích khoảng cách hệ thống Taxi Mai Linh](./02-CURRENT-STATE-AND-GAP-ASSESSMENT.md)** — khung khảo sát 10 Module, 9 quy trình TO.P1–TO.P9, dữ liệu, tích hợp, DIRECT/PARTNER và danh mục quyết định; chưa chứa kết quả hiện trạng đã xác minh.
 - **[01 — Thiết kế nghiệp vụ và hệ thống toàn diện Taxi Mai Linh (cơ sở KPMG Taxi tương lai)](./01-FULL-BUSINESS-SYSTEM-BLUEPRINT.md)** — cơ sở nghiệp vụ, 9 quy trình tương lai, nhóm yêu cầu TO.A–TO.J, bản đồ Module và tiêu chuẩn đặc tả cho đội phát triển.
 - **[00 — OVERVIEW: Tổng quan hệ thống](./00-OVERVIEW.md)**
 - [Danh mục 10 Module](#2-module-catalog)
@@ -40,15 +41,15 @@ Quy trình nghiệp vụ chuẩn:
 
 ```mermaid
 flowchart LR
- A["Customer / Channel"] --> B["Customer & Booking"]
- B --> C["Fleet & Partner"]
- C --> D["Dispatch"]
- D --> E["Driver App & Trip"]
- E --> F["Pricing & Payment"]
- F --> G["Finance & Settlement"]
- D --> H["Control Tower / CSKH"]
+ A["Khách hàng / Kênh tiếp nhận"] --> B["Khách hàng và Đặt xe"]
+ B --> C["Đội xe và Đối tác"]
+ C --> D["Điều phối"]
+ D --> E["Ứng dụng Tài xế và Chuyến đi"]
+ E --> F["Giá cước và Thanh toán"]
+ F --> G["Tài chính và Quyết toán"]
+ D --> H["Trung tâm Điều hành / Chăm sóc khách hàng"]
  E --> H
- G --> I["Reporting"]
+ G --> I["Báo cáo"]
  H --> I
 ```
 
