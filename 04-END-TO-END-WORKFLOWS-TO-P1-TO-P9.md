@@ -1,8 +1,8 @@
 # 04 — QUY TRÌNH NGHIỆP VỤ ĐẦU CUỐI VÀ SWIMLANE TO.P1–TO.P9
 
 **Mã tài liệu:** TAXI-BIZ-004  
-**Phiên bản:** 0.2  
-**Trạng thái:** ĐANG XÂY DỰNG — TO.P1 VÀ TO.P2 ĐÃ ĐẶC TẢ BẢN ĐẦU; TO.P3–TO.P9 CHƯA ĐẶC TẢ  
+**Phiên bản:** 0.3  
+**Trạng thái:** ĐANG XÂY DỰNG — TO.P1–TO.P3 ĐÃ ĐẶC TẢ BẢN ĐẦU; TO.P4–TO.P9 CHƯA ĐẶC TẢ  
 **Nguồn nghiệp vụ:** *MLG_Luu do va mo ta quy trinh & Yeu cau _Dieu hanh taxi_v3.docx*, KPMG, 2015.
 
 > Tài liệu này bám theo mã bước, vai trò và mô tả trong tài liệu KPMG. Không xem quy trình năm 2015 là chính sách hiện hành. Những nội dung KPMG để [xxx], yêu cầu Mai Linh tự quy định hoặc chưa đủ dữ liệu đều được giữ ở trạng thái cần xác nhận. Phần diễn giải thiết kế hệ thống được tách riêng khỏi nội dung nguồn.
@@ -13,7 +13,7 @@
 |---|---|---|
 | TO.P1 | Khách hàng yêu cầu Taxi qua Tổng đài | Đã dựng luồng và swimlane bản đầu |
 | TO.P2 | Khách hàng sử dụng Ứng dụng | Đã dựng luồng và swimlane bản đầu |
-| TO.P3 | Khách yêu cầu tại Điểm tiếp thị có nhân viên điều hành điểm | Chưa đặc tả |
+| TO.P3 | Khách yêu cầu tại Điểm tiếp thị có nhân viên điều hành điểm | Đã dựng luồng và swimlane bản đầu |
 | TO.P4 | Khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm | Chưa đặc tả |
 | TO.P5 | Khách hàng yêu cầu Taxi qua SMS | Chưa đặc tả |
 | TO.P6 | Khách hàng yêu cầu Taxi qua Chat | Chưa đặc tả |
@@ -431,7 +431,198 @@ TO.P2 chỉ đủ điều kiện chuyển sang đặc tả Feature khi:
 7. Có test case cho các nhánh thành công, từ chối, hủy, timeout, GPS lỗi, mất kết nối, khách không xuất hiện, sai người lên xe và thanh toán thất bại.
 
 
-## 4. Tiêu chí hoàn thành một quy trình
+
+## 4. TO.P3 — Khách hàng yêu cầu Taxi tại Điểm tiếp thị
+
+### 4.1. Mục tiêu và phạm vi theo KPMG
+
+TO.P3 mô tả quy trình điều hành xe khi khách hàng yêu cầu đón tại khu vực sắp tài có nhân viên điều hành điểm của Mai Linh, từ lúc khách yêu cầu đến khi thanh toán. Chủ quy trình theo bảng tổng quan KPMG gồm Tổng đài viên, Điều hành điểm tiếp thị, Tổng đài Điều hành và Tài xế.
+
+Đặc trưng của TO.P3 là có nhân viên điều hành tại điểm tiếp thị, có danh sách xe đăng ký sắp tài tại điểm và điều xe đón khách theo thứ tự sắp tài.
+
+### 4.2. Vai trò tham gia
+
+| Vai trò | Trách nhiệm theo nguồn |
+|---|---|
+| Khách hàng | Gặp nhân viên tại điểm tiếp thị, yêu cầu xe, lên xe, thông báo điểm đến, thanh toán và phản hồi |
+| Điều hành điểm tiếp thị | Nhận yêu cầu khách; kiểm tra xe có sẵn; gửi yêu cầu xe về Tổng đài; đăng nhập/đăng xuất theo ca; theo dõi xe sắp tài; chỉ định xe khi được mở quyền; điều xe theo thứ tự sắp tài |
+| Tổng đài Điều hành | Nhận yêu cầu từ điểm tiếp thị và phát yêu cầu theo Unicast/Broadcast |
+| Tài xế | Nhận yêu cầu, chạy đến điểm tiếp thị, đăng ký sắp tài; nhận chỉ định; đến lượt thì đón khách và thực hiện chuyến |
+| Hệ thống | Ghi nhận ca làm/vị trí điều hành điểm, phát yêu cầu, quản lý danh sách và thứ tự sắp tài, ghi nhận từ chối, hỗ trợ hành trình và dữ liệu doanh thu |
+
+### 4.3. Luồng tổng thể
+
+```mermaid
+flowchart TD
+ A["Khách yêu cầu xe tại Điểm tiếp thị"] --> B{"Có xe sẵn tại điểm?"}
+ B -->|Có| C["Điều hành điểm chọn xe theo thứ tự sắp tài"]
+ B -->|Không| D["Điều hành điểm gửi yêu cầu xe về Tổng đài qua ứng dụng"]
+ D --> E["Tổng đài phát yêu cầu Unicast hoặc Broadcast"]
+ E --> F["Tài xế chạy đến điểm và đăng ký sắp tài"]
+ F --> G{"Điểm chờ xe quá lâu?"}
+ G -->|Có| H["Hệ thống mở quyền chỉ định xe cho Điều hành điểm"]
+ H --> I["Điều hành điểm chỉ định xe trống gần điểm"]
+ I --> J{"Tài xế nhận chỉ định?"}
+ J -->|Không| I
+ J -->|Có| K["Tài xế xác nhận và chạy về điểm tiếp thị"]
+ G -->|Không| L["Chờ xe đăng ký sắp tài"]
+ K --> M["Xe vào hàng đợi sắp tài"]
+ L --> M
+ C --> N["Điều xe theo thứ tự sắp tài"]
+ M --> N
+ N --> O{"Tài xế nhận lượt trong thời hạn?"}
+ O -->|Không| P["Chuyển lượt sang tài xế tiếp theo"]
+ P --> N
+ O -->|Có| Q["Khách lên xe và thông báo điểm đến"]
+ Q --> R["Tài xế bấm đồng hồ, nhập điểm đến"]
+ R --> S{"Khách chọn cước cố định đường dài?"}
+ S -->|Có| T["Chuyển TO.P9"]
+ S -->|Không| U["Thực hiện chuyến theo cước đồng hồ"]
+ T --> V["Kết thúc chuyến và xuất hóa đơn"]
+ U --> V
+ V --> W["Khách thanh toán"]
+ W --> X["Khách phản hồi chất lượng dịch vụ"]
+```
+
+**Giới hạn của sơ đồ:** KPMG mô tả rõ nhánh có/không có xe tại điểm, gửi yêu cầu xe, đăng ký sắp tài, chỉ định khi chờ lâu và điều xe theo thứ tự. Tài liệu không mô tả chi tiết cách xử lý khách đến trong lúc hàng đợi đang có xe, hoặc khi không còn xe nào trong hàng đợi; các trường hợp này được ghi nhận để xác nhận, không tự thêm quy tắc.
+
+### 4.4. Diễn giải các bước TO.P3.1–TO.P3.16 theo KPMG
+
+| Mã bước | Hoạt động | Vai trò theo nguồn | Nội dung được mô tả trong KPMG |
+|---|---|---|---|
+| TO.P3.1 | Yêu cầu dịch vụ taxi tại điểm tiếp thị | Khách hàng | Khách gặp nhân viên tiếp thị/điều hành điểm để yêu cầu xe. Thông tin gồm địa điểm đón (thông thường ngay tại điểm tiếp thị), loại xe 4/7 chỗ và thông tin thêm nếu có |
+| TO.P3.2 | Có sẵn xe tại điểm tiếp thị? | Điều hành điểm tiếp thị | Nếu có xe sẵn tại điểm thì sang TO.P3.8 theo sơ đồ mô tả; nếu không có xe thì tiếp tục TO.P3.3 |
+| TO.P3.3 | Gửi yêu cầu xe đến điểm tiếp thị đón khách | Điều hành điểm tiếp thị | Gửi yêu cầu xe về Tổng đài qua ứng dụng cài trên smartphone/tablet. Điều hành điểm đăng nhập khi lên ca, đăng xuất khi xuống ca. GPS thiết bị cho biết vị trí điều hành điểm. Hệ thống ghi nhận thời gian lên/xuống ca và doanh thu của điều hành điểm làm cơ sở tính lương |
+| TO.P3.4 | Phát yêu cầu xe đến tài xế theo Unicast/Broadcast | Tổng đài Điều hành | Unicast là mặc định, phát yêu cầu đến xe trống trong bán kính [xxx] km; bán kính có thể điều chỉnh. Broadcast phát đến tất cả xe trống toàn hệ thống và do Tổng đài kiểm soát bật/tắt trong tình huống đặc biệt như cao điểm hoặc thiếu xe cục bộ |
+| TO.P3.5 | Chạy xe đến điểm tiếp thị và đăng ký sắp tài | Tài xế | Tài xế thấy yêu cầu trên hệ thống, chạy đến điểm tiếp thị và đăng ký sắp tài. KPMG nêu xe trong bán kính 100 m mới được đăng ký sắp tài tại điểm; tham số có thể điều chỉnh |
+| TO.P3.6 | Chỉ định xe đến điểm tiếp thị sắp tài | Điều hành điểm tiếp thị | Khi điểm tiếp thị chờ xe quá lâu tính từ lúc gửi yêu cầu về Tổng đài, hệ thống mở quyền chỉ định. Điều hành điểm thấy xe trống trong bán kính tùy chọn và chỉ định xe về điểm đón khách |
+| TO.P3.7 | Tài xế nhận chỉ định về điểm tiếp thị? | Tài xế | Nếu đồng ý thì sang TO.P3.8. Nếu từ chối thì quay lại TO.P3.6 để điều hành điểm chỉ định xe khác gần đó. Hệ thống ghi nhận việc từ chối và có thể trích xuất báo cáo định kỳ/khi được yêu cầu để đánh giá tài xế |
+| TO.P3.8 | Đến điểm tiếp thị sắp tài | Tài xế | Tài xế xác nhận chỉ định qua ứng dụng Mai Linh Taxi và chạy xe về điểm tiếp thị |
+| TO.P3.9 | Điều xe đón khách theo thứ tự sắp tài | Điều hành điểm tiếp thị | Điều hành điểm điều xe theo thứ tự sắp tài. Hệ thống lưu và hiển thị thứ tự dựa trên thứ tự tài xế đăng ký sắp tài tại điểm. Thời gian tối đa để xe nhận lượt đón khách là [60] giây; quá thời gian thì lượt chuyển sang tài xế tiếp theo. Tham số có thể điều chỉnh |
+| TO.P3.10 | Khách hàng lên xe, thông báo điểm đến | Tài xế và khách hàng | Khách lên xe và thông báo điểm đến cho tài xế |
+| TO.P3.11 | Tài xế bấm đồng hồ, nhập điểm đến vào ứng dụng | Tài xế và khách hàng | Tài xế bấm đồng hồ, nhập điểm đến để ứng dụng hướng dẫn chỉ đường; thông báo lộ trình cho khách. Nếu khách không thay đổi thì tài xế đi theo hướng dẫn. Nếu khách yêu cầu ước tính tiền, tài xế có thể hiển thị cước ước tính trên ứng dụng xe |
+| TO.P3.12 | Có thể áp dụng cước phí đường dài? | Tài xế/Hệ thống | Sau khi nhập điểm đến, nếu đủ điều kiện, hệ thống hiển thị cước đường dài. Tài xế hỏi khách chọn cước cố định hay cước đồng hồ. Chọn cước đường dài thì chuyển TO.P9; chọn cước đồng hồ thì sang TO.P3.13 |
+| TO.P3.13 | Thực hiện dịch vụ chở khách đến nơi yêu cầu | Tài xế | Tài xế chở khách đến nơi; hành trình được lưu bởi hệ thống quản lý hành trình cài đặt trên xe |
+| TO.P3.14 | Kết thúc hành trình và xuất hóa đơn | Tài xế | Hóa đơn gồm doanh thu cước đồng hồ; cước cố định đường dài/phụ thu vượt lộ trình nếu có; phí cầu đường; tiền tip; số tài/MSNV; điểm đầu/cuối; ngày giờ |
+| TO.P3.15 | Thanh toán | Khách hàng | Khách kiểm tra hóa đơn và thanh toán. KPMG 2015 liệt kê tiền mặt, thẻ trả sau MCC, thẻ tín dụng/thẻ ATM và voucher; có mô tả chứng từ giấy kèm theo |
+| TO.P3.16 | Khách hàng phản hồi chất lượng dịch vụ | Khách hàng | Chấm điểm dịch vụ là bắt buộc; ý kiến góp ý/phàn nàn chi tiết là tùy chọn |
+
+### 4.5. Swimlane theo vai trò
+
+```mermaid
+flowchart TB
+ subgraph KH["Khách hàng"]
+  A1["Yêu cầu xe tại điểm tiếp thị"] --> A2["Lên xe và thông báo điểm đến"]
+  A2 --> A3["Thanh toán và phản hồi"]
+ end
+ subgraph DD["Điều hành điểm tiếp thị"]
+  B1["Tiếp nhận yêu cầu"] --> B2{"Có xe sẵn?"}
+  B2 -->|Có| B3["Chọn xe theo thứ tự sắp tài"]
+  B2 -->|Không| B4["Gửi yêu cầu xe về Tổng đài"]
+  B4 --> B5["Theo dõi xe đăng ký sắp tài"]
+  B5 --> B6["Chỉ định xe khi hệ thống mở quyền"]
+  B3 --> B7["Điều xe theo thứ tự hàng đợi"]
+  B6 --> B7
+ end
+ subgraph DH["Tổng đài Điều hành"]
+  C1["Nhận yêu cầu từ điểm"] --> C2["Phát Unicast hoặc Broadcast"]
+ end
+ subgraph TX["Tài xế"]
+  D1["Nhận yêu cầu và chạy đến điểm"] --> D2["Đăng ký sắp tài"]
+  D2 --> D3["Nhận chỉ định nếu được chọn"]
+  D3 --> D4["Chờ đến lượt và nhận khách"]
+  D4 --> D5["Thực hiện chuyến và lập hóa đơn"]
+ end
+ A1 --> B1
+ B4 --> C1
+ C2 --> D1
+ D2 --> B5
+ B6 --> D3
+ B7 --> D4
+ A2 --> D5
+ D5 --> A3
+```
+
+Swimlane thể hiện trách nhiệm chính, không thay thế bảng bước. Các thao tác đăng nhập/đăng xuất theo ca và ghi nhận doanh thu điều hành điểm được mô tả tại TO.P3.3; cần được đưa vào đặc tả Feature quản lý ca/điểm tiếp thị khi phân rã chức năng.
+
+### 4.6. Dữ liệu đầu vào và đầu ra
+
+| Nhóm dữ liệu | Trường/nội dung được nêu trong nguồn |
+|---|---|
+| Yêu cầu tại điểm | Điểm tiếp thị, loại xe 4/7 chỗ, thông tin thêm |
+| Ca điều hành điểm | Thời điểm đăng nhập/lên ca, đăng xuất/xuống ca |
+| Vị trí điểm | GPS thiết bị của điều hành điểm |
+| Phát yêu cầu | Điểm tiếp thị, chế độ Unicast/Broadcast, bán kính phát |
+| Xe sắp tài | Xe/tài xế đăng ký tại điểm; vị trí xe; thứ tự đăng ký |
+| Chỉ định | Xe được điều hành điểm chỉ định; kết quả nhận/từ chối |
+| Điều xe | Thứ tự hàng đợi; thời hạn nhận lượt [60] giây |
+| Trip | Điểm đến, đồng hồ, hướng dẫn lộ trình, dữ liệu hành trình |
+| Hóa đơn | Cước đồng hồ/cố định, phụ thu đường dài, cầu đường, tip, số tài/MSNV, điểm đầu/cuối, ngày giờ |
+| Kết quả | Thanh toán và phản hồi chất lượng |
+
+### 4.7. Điểm bàn giao Module theo kiến trúc đề xuất
+
+| Hoạt động | Module sở hữu/đảm nhiệm | Bàn giao |
+|---|---|---|
+| Danh mục điểm tiếp thị, địa chỉ, phân loại và giới hạn sắp tài | M03 — Dispatch & Queue (quản lý năng lực điểm/queue) | Cấu hình điểm tiếp thị và sức chứa hàng đợi |
+| Hồ sơ, trạng thái và vị trí xe/tài xế | M02 — Fleet/Driver | Nguồn lực trống đủ điều kiện |
+| Tạo yêu cầu điều xe từ điểm tiếp thị | M01 — Booking | Booking gắn điểm tiếp thị/điểm đón |
+| Phát yêu cầu, Unicast/Broadcast, đăng ký sắp tài, chỉ định, thứ tự FIFO | M03 — Dispatch & Queue | Assignment và thứ tự queue |
+| Ca làm, đăng nhập/đăng xuất và quyền điều hành điểm | M08 — Identity & Access phối hợp M07 | Phiên làm việc, phân quyền và nhật ký |
+| Đến đón, bắt đầu/kết thúc Trip, hành trình | M04 — Trip | Sự kiện Trip |
+| Biểu giá, hóa đơn và thanh toán | M05 — Fare & Payment | Kết quả tính cước và giao dịch |
+| Doanh thu, công nợ và đối soát | M06 — Finance | Dữ liệu tài chính theo DIRECT/PARTNER |
+| Màn hình giám sát và quyền can thiệp | M07 — Control Center | Lệnh điều hành có phân quyền |
+| Thông báo và tích hợp ứng dụng | M09 — Integration | Sự kiện thông báo |
+| Báo cáo xe từ chối chỉ định, ca và hoạt động điểm | M10 — Reporting | Dữ liệu báo cáo từ Module nguồn |
+
+**Lưu ý kiến trúc:** Theo phân rã Module đã thống nhất, Điểm tiếp thị và hàng đợi xe là năng lực thuộc M03 — Dispatch & Queue, không mặc định tạo một Module độc lập. Việc quản lý ca nhân viên, quyền thao tác và ghi nhận phục vụ tính lương cần được làm rõ với HR/Finance trước khi thiết kế dữ liệu chấm công/doanh thu điều hành điểm.
+
+### 4.8. Các điểm cần Mai Linh xác nhận
+
+| Mã quyết định | Nội dung cần xác nhận | Căn cứ KPMG |
+|---|---|---|
+| P3-DEC-01 | Danh sách điểm tiếp thị, địa chỉ, tọa độ, trạng thái hoạt động và người quản lý | TO.P3.1–P3.3; yêu cầu TO.C.5 |
+| P3-DEC-02 | Phân loại điểm tiếp thị bình thường/đặc biệt và quy tắc vận hành khác nhau | TO.C.5 |
+| P3-DEC-03 | Quy trình tạo Booking tại điểm: nhân viên nhập những trường nào, có bắt buộc số điện thoại/điểm đến không | TO.P3.1 |
+| P3-DEC-04 | Thiết bị, tài khoản, cách xác thực và quy tắc bàn giao ca của điều hành điểm | TO.P3.3 |
+| P3-DEC-05 | Cách tính doanh thu/hiệu quả điều hành điểm và việc sử dụng dữ liệu này trong tính lương | TO.P3.3 |
+| P3-DEC-06 | Bán kính Unicast cho điểm tiếp thị; KPMG để [xxx] km | TO.P3.4 |
+| P3-DEC-07 | Bán kính 100 m cho phép đăng ký sắp tài còn phù hợp không | TO.P3.5 |
+| P3-DEC-08 | Định nghĩa “chờ xe quá lâu” để mở quyền chỉ định; ai được thay đổi tham số | TO.P3.6 |
+| P3-DEC-09 | Bán kính xe trống được hiển thị để điều hành điểm chỉ định | TO.P3.6 |
+| P3-DEC-10 | Có giới hạn số lần tài xế từ chối chỉ định, thời gian phản hồi và cơ chế xử lý tiếp theo không | TO.P3.7 |
+| P3-DEC-11 | Thứ tự sắp tài có đúng FIFO theo thời điểm đăng ký hay có ngoại lệ theo loại xe/điểm/điều kiện khác | TO.P3.9 |
+| P3-DEC-12 | Thời hạn 60 giây để xe nhận lượt; bắt đầu tính từ thời điểm nào và xử lý khi quá hạn | TO.P3.9 |
+| P3-DEC-13 | Quy tắc xử lý khi khách yêu cầu loại xe không phù hợp với xe đầu hàng đợi | TO.P3.1, P3.9 |
+| P3-DEC-14 | Ngưỡng và biểu giá cước đường dài, phương thức thanh toán còn hiệu lực | TO.P3.12–P3.15 |
+| P3-DEC-15 | Thang điểm, cách tiếp nhận và xử lý phản hồi khách hàng tại điểm | TO.P3.16 |
+
+### 4.9. Diễn giải thiết kế hệ thống — tách biệt với yêu cầu nguồn
+
+Các nội dung sau là đề xuất thiết kế, không phải quy định trực tiếp của KPMG:
+- Một điểm tiếp thị cần có định danh, tọa độ, vùng địa lý, loại điểm, giờ hoạt động, sức chứa queue, cấu hình xe phục vụ và trạng thái hoạt động.
+- Một phiên làm việc của điều hành điểm cần gắn người dùng, điểm tiếp thị, thời điểm bắt đầu/kết thúc, thiết bị và nhật ký thao tác.
+- Queue cần lưu thứ tự vào hàng, thời điểm vào hàng, vị trí hiện tại, trạng thái, lịch sử chuyển lượt và lý do bỏ lượt.
+- Quy tắc FIFO cần được áp dụng trong phạm vi nhóm xe đủ điều kiện; việc lọc theo loại xe/Booking phải được nghiệp vụ phê duyệt để tránh bỏ qua lượt không minh bạch.
+- Chỉ định xe cần kiểm tra xe còn trống, vị trí, năng lực và trạng thái trước khi gửi; việc nhận chỉ định phải có thời hạn và ghi nhận kết quả.
+- Cần phân biệt “xe đến điểm tiếp thị đăng ký sắp tài” với “xe được phân công đón khách”; đây là hai sự kiện/trạng thái khác nhau.
+- Dữ liệu doanh thu điều hành điểm không nên tự động coi là thu nhập/lương nếu chưa có công thức và phê duyệt của HR/Finance.
+- Mọi thay đổi thứ tự queue hoặc bỏ qua lượt phải có lý do, người thực hiện và nhật ký kiểm toán.
+
+### 4.10. Tiêu chí hoàn thành TO.P3
+
+TO.P3 chỉ đủ điều kiện chuyển sang đặc tả Feature khi:
+1. Danh mục điểm tiếp thị, tọa độ, phân loại và năng lực điểm được xác nhận.
+2. Quy trình lên ca/xuống ca và quyền của điều hành điểm được phê duyệt.
+3. Chốt bán kính phát, bán kính đăng ký sắp tài và điều kiện mở quyền chỉ định.
+4. Chốt quy tắc FIFO, điều kiện xe phù hợp và thời hạn nhận lượt.
+5. Chốt cách ghi nhận từ chối chỉ định và báo cáo đánh giá tài xế.
+6. Chốt cách ghi nhận doanh thu/hiệu quả điều hành điểm và quan hệ với tính lương.
+7. Có test case cho điểm không có xe, phát Unicast/Broadcast, xe vào queue, chỉ định bị từ chối, quá hạn 60 giây, xe không phù hợp loại xe, khách lên xe, tính cước và thanh toán.
+
+
+## 5. Tiêu chí hoàn thành một quy trình
 
 Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặc tả tính năng khi:
 1. Có chủ quy trình và các vai trò tham gia được xác nhận.
@@ -442,19 +633,20 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 6. Có truy vết về yêu cầu nguồn KPMG và quyết định hiện hành.
 7. Có kịch bản kiểm thử và tiêu chí nghiệm thu.
 
-## 5. Trình tự tiếp tục
+## 6. Trình tự tiếp tục
 
 - Hoàn thiện TO.P1 sau khi kiểm tra lưu đồ gốc và xác nhận chính sách hiện tại.
-- Rà soát TO.P1 và TO.P2 với nghiệp vụ hiện hành; sau đó đặc tả TO.P3 — khách yêu cầu tại Điểm tiếp thị.
+- Rà soát TO.P1–TO.P3 với nghiệp vụ hiện hành; sau đó đặc tả TO.P4 — khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm.
 - Đặc tả TO.P3 và TO.P4 — hai mô hình điểm tiếp thị/khu vực sắp tài.
 - Đặc tả TO.P5, TO.P6, TO.P7 — SMS, Chat, Web.
 - Đặc tả TO.P8 — đặt xe trước.
 - Đặc tả TO.P9 — cước phí đường dài.
 - Sau khi hoàn tất 9 quy trình, xây dựng bộ State Machine và ERD tổng thể dựa trên luồng đã xác nhận.
 
-## 6. Lịch sử phiên bản
+## 7. Lịch sử phiên bản
 
 | Phiên bản | Ngày | Nội dung | Trạng thái |
 |---|---|---|---|
 | 0.1 | 2026-11-14 | Tạo danh mục TO.P1–TO.P9; đặc tả bản đầu TO.P1 từ tài liệu KPMG | Đang rà soát |
 | 0.2 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P2 — khách hàng sử dụng ứng dụng | Đang rà soát |
+| 0.3 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P3 — khách yêu cầu tại Điểm tiếp thị | Đang rà soát |
