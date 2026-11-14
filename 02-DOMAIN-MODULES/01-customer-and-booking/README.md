@@ -13,7 +13,7 @@ Customer, ContactPoint, Booking, BookingStop, BookingRevision, QuoteReference.
 | CUS-001 | Customer profile/search | P1 | Planned |
 | [BKG-001](../../docs/05-FEATURE-SPECS/M01-customer-and-booking/BKG-001-create-immediate-booking.md) | Create immediate booking | P0 | Draft v0.1 |
 | BKG-002 | Create scheduled booking | P1 | Planned |
-| BKG-003 | Validation/serviceability | P0 | Planned |
+| [BKG-003](../../docs/05-FEATURE-SPECS/M01-customer-and-booking/BKG-003-validation-and-serviceability.md) | Validation/serviceability | P0 | Draft v0.1 |
 | BKG-004 | Pickup/destination/ordered stops | P0 | Planned |
 | BKG-005 | Booking revision/change request | P1 | Planned |
 | BKG-006 | Cancel booking/policy | P1 | Planned |
