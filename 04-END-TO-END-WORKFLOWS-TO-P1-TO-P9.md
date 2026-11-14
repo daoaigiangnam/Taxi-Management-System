@@ -637,7 +637,7 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 
 - Hoàn thiện TO.P1 sau khi kiểm tra lưu đồ gốc và xác nhận chính sách hiện tại.
 - Rà soát TO.P1–TO.P3 với nghiệp vụ hiện hành; sau đó đặc tả TO.P4 — khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm.
-- Đặc tả TO.P3 và TO.P4 — hai mô hình điểm tiếp thị/khu vực sắp tài.
+- Đặc tả TO.P4 — khu vực sắp tài không có nhân viên điều hành điểm.
 - Đặc tả TO.P5, TO.P6, TO.P7 — SMS, Chat, Web.
 - Đặc tả TO.P8 — đặt xe trước.
 - Đặc tả TO.P9 — cước phí đường dài.
