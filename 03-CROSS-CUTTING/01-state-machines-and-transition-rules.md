@@ -4,7 +4,7 @@
 **Phiên bản:** 0.2  
 **Trạng thái:** DỰ THẢO KIẾN TRÚC — CHỜ CHỦ NGHIỆP VỤ VÀ CHỦ MODULE PHÊ DUYỆT  
 **Phạm vi:** Booking, DispatchRun, Offer, Assignment, Trip, Fare, Payment, Refund, Settlement, Driver/Vehicle Availability và Queue  
-**Tài liệu liên quan:** [00 — Tổng quan](../../00-OVERVIEW.md) · [03 — Kiến trúc Module](../../03-MODULE-ARCHITECTURE-AND-OWNERSHIP.md) · [04 — Quy trình TO.P1–TO.P9](../../04-END-TO-END-WORKFLOWS-TO-P1-TO-P9.md)
+**Tài liệu liên quan:** [00 — Tổng quan](../00-OVERVIEW.md) · [03 — Kiến trúc Module](../03-MODULE-ARCHITECTURE-AND-OWNERSHIP.md) · [04 — Quy trình TO.P1–TO.P9](../04-END-TO-END-WORKFLOWS-TO-P1-TO-P9.md)
 
 > **Lưu ý về nguồn:** Tài liệu KPMG năm 2015 mô tả các bước nghiệp vụ, vai trò và một số tình huống xử lý, nhưng không cung cấp một bộ enum State Machine thống nhất cho toàn hệ thống. Các tên trạng thái, transition và guard trong tài liệu này là **đề xuất thiết kế hệ thống** được suy ra từ quy trình và kiến trúc hiện tại; không được hiểu là chính sách vận hành đã được Mai Linh phê duyệt. Mọi tham số [xxx], thời hạn, điều kiện hủy, no-show và chính sách tài chính vẫn phải được xác nhận.
 
@@ -603,4 +603,4 @@ Tài liệu chỉ được xem là đủ điều kiện chuyển sang thiết k�
 **Nguyên tắc chốt:** State Machine là hợp đồng hành vi giữa các Module. Nếu trạng thái và điều kiện chuyển trạng thái chưa thống nhất, chưa nên triển khai code hoặc tạo các API rời rạc.
 
 ---
-**Quay lại:** [README — Taxi Management System](../../README.md)
+**Quay lại:** [README — Taxi Management System](../README.md)
