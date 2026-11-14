@@ -1,8 +1,8 @@
 # 04 — QUY TRÌNH NGHIỆP VỤ ĐẦU CUỐI VÀ SWIMLANE TO.P1–TO.P9
 
 **Mã tài liệu:** TAXI-BIZ-004  
-**Phiên bản:** 0.8  
-**Trạng thái:** ĐANG XÂY DỰNG — TO.P1–TO.P8 ĐÃ ĐẶC TẢ BẢN ĐẦU; TO.P9 CHƯA ĐẶC TẢ  
+**Phiên bản:** 0.9  
+**Trạng thái:** ĐANG XÂY DỰNG — TO.P1–TO.P9 ĐÃ ĐẶC TẢ BẢN ĐẦU  
 **Nguồn nghiệp vụ:** *MLG_Luu do va mo ta quy trinh & Yeu cau _Dieu hanh taxi_v3.docx*, KPMG, 2015.
 
 > Tài liệu này bám theo mã bước, vai trò và mô tả trong tài liệu KPMG. Không xem quy trình năm 2015 là chính sách hiện hành. Những nội dung KPMG để [xxx], yêu cầu Mai Linh tự quy định hoặc chưa đủ dữ liệu đều được giữ ở trạng thái cần xác nhận. Phần diễn giải thiết kế hệ thống được tách riêng khỏi nội dung nguồn.
@@ -19,7 +19,7 @@
 | TO.P6 | Khách hàng yêu cầu Taxi qua Chat | Đã dựng luồng và swimlane bản đầu |
 | TO.P7 | Khách hàng yêu cầu Taxi qua Web | Đã dựng luồng và swimlane bản đầu |
 | TO.P8 | Khách hàng đặt xe trước | Đã dựng luồng và swimlane bản đầu |
-| TO.P9 | Cước phí đường dài | Chưa đặc tả |
+| TO.P9 | Cước phí đường dài | Đã dựng luồng và swimlane bản đầu |
 
 ## 2. TO.P1 — Khách hàng yêu cầu Taxi qua Tổng đài
 
@@ -1727,7 +1727,205 @@ Các nội dung sau là đề xuất thiết kế để Mai Linh xem xét, khôn
 7. Chốt liên kết TO.P9, giá đường dài/đi ghép, hóa đơn, thanh toán và đánh giá.
 8. Có test case cho tất cả kênh đặt trước; xác nhận/hết hạn; sửa/hủy; phát lịch; tài xế đăng ký/hủy/từ chối; chỉ định lại; đến sớm/trễ; khách không có mặt/không phản hồi; sai mã; chuyến đường dài/đi ghép; thanh toán và đánh giá.
 
-## 10. Tiêu chí hoàn thành một quy trình
+
+## 10. TO.P9 — Quy trình điều hành taxi với cước phí đường dài
+
+### 10.1. Mục tiêu và phạm vi theo KPMG
+
+TO.P9 mô tả việc xác định khách có đặt trước chuyến đường dài hay không; trường hợp chưa đặt trước, tài xế yêu cầu Tổng đài cấp mã dịch vụ với cước phí quy định. Tổng đài ghi nhận thông tin hành trình, cấp mã và cập nhật danh sách xe đi đường dài một chiều/hai chiều. Trong quá trình thực hiện, khách có thể đăng ký thêm hoặc hủy chiều về; Tổng đài cập nhật thông tin, tìm khách đường dài cho xe trống chiều về và xếp chuyến về. Quy trình kết thúc bằng hóa đơn, thanh toán và phản hồi khách hàng.
+
+**Phạm vi nguồn:** KPMG 2015, các bước TO.P9.1–TO.P9.18, trang 72–76. Đây là mô tả lịch sử, không mặc nhiên là chính sách giá hoặc vận hành hiện hành của Mai Linh.
+
+### 10.2. Vai trò tham gia
+
+| Vai trò | Trách nhiệm theo nguồn |
+|---|---|
+| Tài xế | Xác định khách có đặt trước đường dài; yêu cầu cấp mã; thực hiện chuyến; thông báo đăng ký/hủy chiều về; lập hóa đơn |
+| Tổng đài viên | Xử lý yêu cầu, cấp mã; cập nhật danh sách xe đường dài; thông báo cước; cập nhật hủy chiều về; tìm và xếp chuyến về |
+| Khách hàng | Sử dụng dịch vụ một chiều/hai chiều; đăng ký thêm hoặc hủy chiều về; thanh toán và phản hồi |
+| Hệ thống | Lưu mã dịch vụ, thông tin hành trình, danh sách xe đường dài, cước và các cập nhật liên quan |
+
+### 10.3. Luồng tổng thể
+
+```mermaid
+flowchart TD
+ A["Bắt đầu dịch vụ đường dài"] --> B{"Khách đã đặt trước đường dài?"}
+ B -->|Có| E["Sử dụng thông tin đặt trước và mã dịch vụ"]
+ B -->|Không| C["Tài xế yêu cầu Tổng đài cấp mã"]
+ C --> D["Tổng đài tính theo cước quy định, cấp mã và cập nhật danh sách xe"]
+ D --> E
+ E --> F["Thông báo mã/cước cho tài xế"]
+ F --> G["Thực hiện hành trình chiều đi"]
+ G --> H{"Dịch vụ một chiều hay hai chiều?"}
+ H -->|Một chiều| I{"Khách đăng ký thêm chiều về?"}
+ I -->|Có| J["Tổng đài cập nhật chiều về và cước cố định"]
+ J --> K["Thông báo cước mới cho tài xế"]
+ K --> L["Thực hiện chiều về"]
+ I -->|Không| Q["Kết thúc hành trình"]
+ H -->|Hai chiều| M{"Khách hủy chiều về?"}
+ M -->|Không| L
+ M -->|Có| N["Tài xế báo Tổng đài hủy chiều về"]
+ N --> O["Tổng đài cập nhật hủy và danh sách xe"]
+ O --> P{"Tìm được khách đường dài cho xe trống chiều về?"}
+ P -->|Có| R["Xếp chuyến về cho tài xế"]
+ R --> F
+ P -->|Không| Q
+ L --> Q
+ Q --> S["Lập hóa đơn"]
+ S --> T["Khách thanh toán"]
+ T --> U["Tiếp nhận phản hồi"]
+```
+
+**Giới hạn diễn giải:** Luồng trên tổng hợp các nhánh được mô tả trong TO.P9.1–TO.P9.18. Riêng nhánh tìm khách chiều về và việc quay lại bước cấp mã theo nguồn cần được Mai Linh xác nhận trước khi chốt quy tắc tự động.
+
+### 10.4. Diễn giải các bước theo mã KPMG
+
+| Mã bước | Hoạt động | Vai trò theo nguồn | Nội dung được mô tả trong KPMG |
+|---|---|---|---|
+| TO.P9.1 | Khách hàng có đặt trước đường dài? | Tài xế | Nếu khách đã đặt trước đường dài thì chuyển TO.P9.5; nếu chưa thì sang TO.P9.2 |
+| TO.P9.2 | Thông báo Tổng đài cấp mã số đi đường dài | Tài xế | Tài xế thông báo Tổng đài để yêu cầu cấp mã số đi đường dài với cước phí quy định |
+| TO.P9.3 | Xử lý yêu cầu và cấp mã số đi đường dài | Tổng đài viên | Căn cứ cước phí quy định, cấp mã và cập nhật danh sách xe đường dài một chiều/hai chiều. Thông tin gồm địa chỉ đón và đến (số nhà, đường, phường, quận, thành phố), số điện thoại nếu cần, số km, loại một chiều/hai chiều và số tiền |
+| TO.P9.4 | Thông báo mã dịch vụ cước cố định | Tổng đài viên | Mã dịch vụ được thông báo cho tài xế qua ứng dụng trên xe |
+| TO.P9.5 | Thực hiện dịch vụ chở khách đến nơi yêu cầu | Tài xế | Tài xế thực hiện dịch vụ chở khách đến địa chỉ yêu cầu |
+| TO.P9.6 | Khách hàng sử dụng cước đường dài một chiều? | Tài xế | Một chiều chuyển TO.P9.7; hai chiều chuyển TO.P9.8 |
+| TO.P9.7 | Khách hàng có đăng ký thêm chiều về? | Tài xế | Nếu đăng ký thêm chiều về so với lịch trình ban đầu thì chuyển TO.P9.9; nếu không thì chuyển TO.P9.10 |
+| TO.P9.8 | Khách hàng có hủy chiều về? | Tài xế | Nếu khách đăng ký hai chiều và hủy chiều về thì chuyển TO.P9.12; nếu không thay đổi/hủy thì chuyển TO.P9.11 |
+| TO.P9.9 | Cập nhật thông tin chiều về với cước phí cố định | Tổng đài viên | Cập nhật thông tin chiều về và cước đã cố định; cập nhật danh sách xe đường dài một chiều/hai chiều. Thông tin gồm địa chỉ đến, số điện thoại nếu cần, số km và số tiền |
+| TO.P9.10 | Thông báo phí dịch vụ cước cố định | Tổng đài viên | Thông báo chi phí dịch vụ mới đăng ký thêm cho tài xế để tài xế thông báo khách hàng |
+| TO.P9.11 | Thực hiện dịch vụ chở khách đến nơi yêu cầu chiều còn lại | Tài xế | Tài xế thực hiện chuyến chiều còn lại theo đăng ký |
+| TO.P9.12 | Thông báo Tổng đài hủy chiều về | Tài xế | Khi khách hủy chiều về của dịch vụ hai chiều, tài xế thông báo Tổng đài |
+| TO.P9.13 | Cập nhật hủy chuyến về | Tổng đài viên | Căn cứ yêu cầu hủy của tài xế, cập nhật hủy chiều về cho mã đường dài và cập nhật danh sách xe đường dài một chiều/hai chiều |
+| TO.P9.14 | Tổng đài/Tài xế tìm được khách đường dài cho tài xế có xe trống chiều về? | Tổng đài viên/Tài xế | Nếu Tổng đài tìm được khách đường dài cho xe trống chiều về thì chuyển TO.P9.15; nếu tài xế tự tìm được khách thì chuyển TO.P9.2 |
+| TO.P9.15 | Xếp chuyến về cho tài xế | Tổng đài viên | Tổng đài xếp chuyến về cho tài xế và chuyển TO.P9.4 |
+| TO.P9.16 | Kết thúc hành trình và xuất hóa đơn | Tài xế | Hóa đơn gồm cước đồng hồ, cước cố định đường dài/phụ thu vượt lộ trình, phí cầu đường, tip, số tài/MSNV, điểm đầu/cuối và ngày giờ |
+| TO.P9.17 | Thanh toán | Khách hàng | Khách kiểm tra hóa đơn và thanh toán. KPMG 2015 liệt kê tiền mặt, MCC, thẻ tín dụng/thẻ ATM và voucher |
+| TO.P9.18 | Khách hàng phản hồi chất lượng dịch vụ (nếu có) | Khách hàng | Nguồn ghi nhận điểm đánh giá là bắt buộc, góp ý/phàn nàn là tùy chọn; kênh gồm ứng dụng, khách gọi Tổng đài hoặc Tổng đài gọi ngẫu nhiên |
+
+### 10.5. Swimlane theo vai trò
+
+```mermaid
+flowchart TB
+ subgraph KH["Khách hàng"]
+  A1["Đặt trước hoặc xác nhận dịch vụ đường dài"] --> A2["Chọn/đăng ký một chiều hoặc hai chiều"]
+  A2 --> A3["Yêu cầu thêm hoặc hủy chiều về"]
+  A3 --> A4["Kiểm tra hóa đơn và thanh toán"]
+  A4 --> A5["Đánh giá dịch vụ"]
+ end
+ subgraph TX["Tài xế"]
+  B1["Kiểm tra thông tin đặt trước"] --> B2["Yêu cầu cấp mã nếu chưa có"]
+  B2 --> B3["Nhận mã dịch vụ"]
+  B3 --> B4["Thực hiện hành trình"]
+  B4 --> B5["Báo Tổng đài khi thay đổi chiều về"]
+  B5 --> B6["Thực hiện chuyến chiều còn lại nếu có"]
+  B6 --> B7["Lập hóa đơn"]
+ end
+ subgraph TD["Tổng đài viên"]
+  C1["Kiểm tra cước quy định"] --> C2["Cấp mã và ghi nhận hành trình"]
+  C2 --> C3["Cập nhật danh sách xe đường dài"]
+  C3 --> C4["Cập nhật thêm/hủy chiều về"]
+  C4 --> C5["Tìm và xếp chuyến về nếu có khách"]
+  C5 --> C6["Thông báo mã/cước cho tài xế"]
+ end
+ A1 --> B1
+ B2 --> C1
+ C2 --> C6
+ C6 --> B3
+ B5 --> C4
+ C5 --> B6
+ B7 --> A4
+ A5 --> C6
+```
+
+### 10.6. Dữ liệu đầu vào và đầu ra
+
+| Nhóm | Dữ liệu theo tài liệu nguồn |
+|---|---|
+| Điểm đón | Số nhà, đường, phường, quận, thành phố |
+| Điểm đến | Số nhà, đường, phường, quận, thành phố |
+| Liên hệ | Số điện thoại nếu cần |
+| Thông tin hành trình | Số km, một chiều/hai chiều, chiều về, lịch trình |
+| Giá và mã | Cước phí quy định, số tiền, mã dịch vụ cước cố định |
+| Danh sách vận hành | Danh sách xe đường dài một chiều/hai chiều, xe trống chiều về |
+| Thay đổi | Đăng ký thêm chiều về, hủy chiều về, lý do và thời điểm cập nhật |
+| Ghép chuyến chiều về | Khách đường dài tìm được, tài xế được xếp chuyến |
+| Hóa đơn | Cước đồng hồ, cước cố định/phụ thu, phí cầu đường, tip, số tài/MSNV, điểm đầu/cuối, ngày giờ |
+| Kết quả | Thanh toán và phản hồi khách hàng |
+
+### 10.7. Điểm bàn giao Module theo kiến trúc đề xuất
+
+| Hoạt động nghiệp vụ | Module sở hữu/đảm nhiệm | Bàn giao |
+|---|---|---|
+| Tiếp nhận yêu cầu đặt trước và thông tin hành trình đường dài | M01 — Booking | Booking và yêu cầu giá đường dài có mã liên kết |
+| Hồ sơ tài xế/xe và trạng thái xe trống chiều về | M02 — Fleet/Driver | Nguồn lực và trạng thái sẵn sàng |
+| Phân công tài xế, quản lý xe trống chiều về, xếp chuyến về | M03 — Dispatch & Queue | Assignment chiều đi/chiều về và lịch sử điều phối |
+| Thực hiện, theo dõi và kết thúc từng Trip | M04 — Trip | Trip leg, hành trình, thời điểm và dữ liệu thực tế |
+| Bảng giá đường dài, tính cước, phụ thu, hóa đơn và thanh toán | M05 — Fare & Payment | Phiên bản giá, kết quả tính cước, giao dịch |
+| Doanh thu, công nợ, phân bổ và đối soát | M06 — Finance | Ghi nhận tài chính đúng DIRECT/PARTNER |
+| Giám sát mã đường dài, xe trống chiều về, thay đổi và cảnh báo | M07 — Control Center | Can thiệp điều hành có nhật ký |
+| Quyền cấp mã, sửa giá, hủy chiều về và phê duyệt ngoại lệ | M08 — Identity & Access | Phân quyền và audit trail |
+| Tích hợp ứng dụng tài xế, thông báo mã/cước | M09 — Integration | Thông điệp và trạng thái giao nhận |
+| Báo cáo chuyến đường dài, chiều về, hủy và doanh thu | M10 — Reporting | Báo cáo từ dữ liệu nguồn |
+
+### 10.8. Các điểm cần Mai Linh xác nhận
+
+| Mã quyết định | Nội dung chưa được chốt | Căn cứ |
+|---|---|---|
+| P9-DEC-01 | Định nghĩa chuyến đường dài: ngưỡng km, khu vực, tuyến/địa bàn và điều kiện áp dụng | TO.P9.1–P9.3; nguồn không nêu ngưỡng |
+| P9-DEC-02 | Bảng giá đường dài theo tuyến, cự ly, loại xe, thời điểm và đơn vị sở hữu dịch vụ | TO.P9.3 |
+| P9-DEC-03 | Cách tính một chiều/hai chiều; chiều về có bắt buộc cùng điểm đến/điểm đón không | TO.P9.3, P9.6–P9.11 |
+| P9-DEC-04 | Quy tắc chiều về vãng lai: điều kiện, thời gian chờ, vùng hoạt động và cách tính giá | TO.P9.3, P9.14–P9.15 |
+| P9-DEC-05 | Ai có quyền yêu cầu/cấp mã đường dài; trường hợp nào tài xế được tự yêu cầu và trường hợp đặt trước đã có mã | TO.P9.1–P9.4 |
+| P9-DEC-06 | Mã dịch vụ duy nhất, thời hạn hiệu lực, phạm vi sử dụng và cơ chế chống dùng lại | TO.P9.3–P9.4 |
+| P9-DEC-07 | Quy trình duyệt giá ngoại lệ, phụ thu, vượt lộ trình và thay đổi điểm đến | TO.P9.3, P9.9, P9.16 |
+| P9-DEC-08 | Thời điểm khách được đăng ký thêm/hủy chiều về; điều kiện và phí hủy | TO.P9.7–P9.13 |
+| P9-DEC-09 | Cách xử lý khi tài xế đã nhận khách chiều về khác hoặc đã được điều phối chuyến khác | TO.P9.12–P9.15 |
+| P9-DEC-10 | Quy tắc tìm khách chiều về: phạm vi tìm kiếm, thứ tự ưu tiên, thời gian chờ và quyền tự tìm khách của tài xế | TO.P9.14–P9.15 |
+| P9-DEC-11 | Khi ghép khách chiều về, Booking/Trip/Assignment được tạo mới hay cập nhật vào lịch trình hiện có | TO.P9.14–P9.15 |
+| P9-DEC-12 | Cách tính doanh thu, phân bổ cước và chi phí khi có chuyến chiều về phát sinh | TO.P9.14–P9.17 |
+| P9-DEC-13 | Quy tắc ghi nhận số km thực tế, lộ trình thực tế và chứng cứ vượt tuyến | TO.P9.3, P9.16 |
+| P9-DEC-14 | Các phương thức thanh toán, hóa đơn điện tử và chứng từ đang áp dụng | TO.P9.16–P9.17 |
+| P9-DEC-15 | Có bắt buộc đánh giá sau chuyến đường dài; thang điểm và kênh tiếp nhận hiện hành | TO.P9.18 |
+| P9-DEC-16 | Quy trình áp dụng riêng cho DIRECT/PARTNER, xe thuộc Mai Linh và xe đối tác | Kiến trúc hệ thống; nguồn TO.P9 chưa phân tách |
+
+### 10.9. Điểm chưa nhất quán / cần đối chiếu trong tài liệu nguồn
+
+1. TO.P9.1 nói khách đã đặt trước đường dài thì chuyển TO.P9.5; chưa mô tả rõ cách tra cứu/xác minh mã đã được cấp trong Booking.
+2. TO.P9.3 cấp mã và cập nhật danh sách xe đường dài nhưng chưa nêu cách kiểm tra bảng giá, phiên bản giá, quyền phê duyệt hoặc hiệu lực mã.
+3. TO.P9.6 tách một chiều/hai chiều; TO.P9.7 lại hỏi khách một chiều có đăng ký thêm chiều về hay không. Cần xác nhận đây là thay đổi hợp đồng dịch vụ hay một giao dịch chiều về mới.
+4. TO.P9.8–P9.13 mô tả hủy chiều về nhưng chưa nêu điều kiện hủy, phí hủy, thời điểm khóa và cách xử lý nếu tài xế đã nhận chuyến chiều về khác.
+5. TO.P9.14 có nhánh tài xế tự tìm được khách thì quay lại TO.P9.2 để yêu cầu cấp mã; cần xác nhận cơ chế kiểm soát khách, giá và chống giao dịch ngoài hệ thống.
+6. TO.P9.15 xếp chuyến về rồi chuyển TO.P9.4 (thông báo mã/cước); chưa nêu cách tạo Booking/Trip/Assignment mới hay liên kết vào mã đường dài cũ.
+7. TO.P9.16–P9.17 dùng hóa đơn và phương thức thanh toán theo mô tả năm 2015; cần xác nhận quy trình hóa đơn, chứng từ và phương thức hiện hành.
+8. Nguồn không định nghĩa ngưỡng cự ly đường dài, bảng giá, phụ thu, thời hạn chiều về hoặc cách tính chiều về vãng lai. Không tự suy diễn các giá trị này.
+
+### 10.10. Diễn giải thiết kế hệ thống — tách biệt với yêu cầu nguồn
+
+Các nội dung sau là đề xuất thiết kế để Mai Linh xem xét, không phải nguyên văn yêu cầu KPMG:
+
+- Cần quản lý riêng **mã dịch vụ đường dài**, **bảng giá/phiên bản giá**, **Booking**, **Assignment** và **Trip**. Mã dịch vụ không thay thế Booking hoặc Trip.
+- Mỗi chiều đi/chiều về nên được biểu diễn thành một chặng dịch vụ (Trip Leg) có điểm đầu, điểm cuối, thời gian dự kiến/thực tế, cự ly dự kiến/thực tế, tài xế/xe, trạng thái và giá áp dụng. Hai chiều có thể liên kết bằng một hồ sơ dịch vụ đường dài nhưng không nên gộp thành một Trip duy nhất nếu thực tế là hai hành trình độc lập.
+- Bảng giá phải có phiên bản, ngày giờ hiệu lực, khu vực/tuyến, loại xe, cách tính, phụ thu và người phê duyệt. Khi mã dịch vụ được cấp, cần lưu bản chụp phiên bản giá để bảo đảm truy vết; mọi thay đổi sau đó phải có quy trình phê duyệt.
+- Mã dịch vụ cần duy nhất, khó đoán, có trạng thái và thời hạn hiệu lực; chỉ được xác nhận trên đúng Booking/Trip, xe/tài xế và hành trình được phép.
+- Đăng ký thêm hoặc hủy chiều về phải là sự kiện có người thực hiện, thời điểm, lý do, giá trước/sau và sự chấp thuận của khách; không ghi đè lịch sử giá hoặc lịch trình ban đầu.
+- Xe trống chiều về phải được quản lý như năng lực điều phối có thời hạn và khu vực, không đồng nghĩa xe luôn sẵn sàng nhận mọi Booking. Cần kiểm tra vị trí, thời gian, loại xe, hợp đồng và thời gian nghỉ/lái xe theo chính sách được phê duyệt.
+- Nếu tài xế tự tìm khách chiều về, hệ thống vẫn phải tạo Booking/Assignment hợp lệ và cấp mã trước khi thực hiện; không để chuyến phát sinh ngoài hệ thống hoặc không có dấu vết doanh thu.
+- Việc xếp khách chiều về phải kiểm tra xung đột thời gian, điểm đón/trả, khả năng phục vụ, giá và quyền sở hữu DIRECT/PARTNER; không chỉ dựa vào trạng thái “xe trống”.
+- Doanh thu chuyến chiều đi và chiều về phải liên kết được nhưng phân bổ theo từng Trip/Trip Leg và chủ thể cung cấp dịch vụ. DIRECT/PARTNER dùng chung năng lực điều hành nhưng hợp đồng, doanh thu, công nợ và đối soát vẫn tách biệt.
+- Cước ước tính, cước cố định và cước cuối cùng phải được phân biệt. Phụ thu vượt tuyến cần có dữ liệu lộ trình thực tế, quy tắc tính và bằng chứng được ghi nhận.
+- Các chính sách giá, ngưỡng đường dài, phụ thu, hủy chiều về và thanh toán phải cấu hình theo phiên bản hiệu lực; không hard-code từ tài liệu KPMG 2015.
+
+### 10.11. Tiêu chí hoàn thành TO.P9
+
+1. Chốt định nghĩa chuyến đường dài và phạm vi áp dụng.
+2. Chốt bảng giá, phiên bản giá, một chiều/hai chiều, chiều về vãng lai và phụ thu.
+3. Chốt quy trình cấp mã, quyền cấp mã, thời hạn và xác thực mã.
+4. Chốt đăng ký thêm/hủy chiều về, điều kiện hủy và phí liên quan.
+5. Chốt quản lý xe trống chiều về, tìm khách và xếp chuyến về.
+6. Chốt mô hình Booking/Assignment/Trip Leg và cách liên kết hai chiều.
+7. Chốt phân bổ doanh thu, DIRECT/PARTNER, hóa đơn và thanh toán.
+8. Có test case cho đặt trước đường dài, cấp mã tại chỗ, mã sai/hết hạn, một chiều, hai chiều, thêm/hủy chiều về, tìm khách chiều về, tài xế tự tìm khách, xung đột lịch, vượt tuyến, phụ thu, thanh toán và đối soát.
+
+## 11. Tiêu chí hoàn thành một quy trình
 
 Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặc tả tính năng khi:
 1. Có chủ quy trình và các vai trò tham gia được xác nhận.
@@ -1738,7 +1936,7 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 6. Có truy vết về yêu cầu nguồn KPMG và quyết định hiện hành.
 7. Có kịch bản kiểm thử và tiêu chí nghiệm thu.
 
-## 11. Trình tự tiếp tục
+## 12. Trình tự tiếp tục
 
 - Hoàn thiện TO.P1 sau khi kiểm tra lưu đồ gốc và xác nhận chính sách hiện tại.
 - Rà soát TO.P1–TO.P5 với nghiệp vụ hiện hành.
@@ -1747,7 +1945,7 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 - Đặc tả TO.P9 — cước phí đường dài.
 - Sau khi hoàn tất 9 quy trình, xây dựng bộ State Machine và ERD tổng thể dựa trên luồng đã xác nhận.
 
-## 12. Lịch sử phiên bản
+## 13. Lịch sử phiên bản
 
 | Phiên bản | Ngày | Nội dung | Trạng thái |
 |---|---|---|---|
@@ -1755,4 +1953,4 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 | 0.2 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P2 — khách hàng sử dụng ứng dụng | Đang rà soát |
 | 0.3 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P3 — khách yêu cầu tại Điểm tiếp thị | Đang rà soát |
 | 0.4 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P4 — khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm | Đang rà soát |
-| 0.5 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P5 — khách hàng yêu cầu Taxi qua SMS | Đang rà soát |\n| 0.6 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P6 — khách hàng yêu cầu Taxi qua Chat | Đang rà soát |\n| 0.7 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P7 — khách hàng yêu cầu Taxi qua Web | Đang rà soát |\n| 0.8 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P8 — khách hàng đặt xe trước | Đang rà soát |\n
+| 0.5 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P5 — khách hàng yêu cầu Taxi qua SMS | Đang rà soát |\n| 0.6 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P6 — khách hàng yêu cầu Taxi qua Chat | Đang rà soát |\n| 0.7 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P7 — khách hàng yêu cầu Taxi qua Web | Đang rà soát |\n| 0.8 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P8 — khách hàng đặt xe trước | Đang rà soát |\n\n| 0.9 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P9 — cước phí đường dài; hoàn thành bản đầu TO.P1–TO.P9 | Đang rà soát |\n
