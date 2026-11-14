@@ -72,7 +72,7 @@ Theo Feature Catalog hiện có trong [M01 README](../../02-DOMAIN-MODULES/01-cu
 | [BKG-003](./M01-customer-and-booking/BKG-003-validation-and-serviceability.md) | Kiểm tra hợp lệ và vùng phục vụ | P0 | DRAFT v0.1 |
 | [BKG-004](./M01-customer-and-booking/BKG-004-pickup-destination-and-ordered-stops.md) | Điểm đón/điểm đến/các điểm dừng theo thứ tự | P0 | DRAFT v0.1 |
 | [BKG-005](./M01-customer-and-booking/BKG-005-booking-amendment-and-change-request.md) | Sửa đổi Booking / yêu cầu thay đổi | P1 | DRAFT v0.1 |
-| BKG-006 | Hủy Booking / chính sách hủy | P1 | PLANNED |
+| [BKG-006](./M01-customer-and-booking/BKG-006-cancel-booking-and-cancellation-policy.md) | Hủy Booking / chính sách hủy | P1 | DRAFT v0.1 |
 | BKG-007 | Phát hiện/cảnh báo Booking trùng | P2 | PLANNED |
 | BKG-008 | Tra cứu/chi tiết/dòng thời gian Booking | P0 | PLANNED |
 | BKG-009 | Yêu cầu/tham chiếu báo giá | P1 | PLANNED |
