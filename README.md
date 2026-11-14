@@ -14,7 +14,7 @@
 - **[00 — OVERVIEW: Tổng quan hệ thống](./00-OVERVIEW.md)**
 - [Danh mục 10 Module](#2-module-catalog)
 - [Thiết kế xuyên Module](#3-thiet-ke-xuyen-module)
-- [Feature Specifications](./docs/05-FEATURE-SPECS/README.md)
+- **[Feature Specifications — Danh mục và mẫu đặc tả](./docs/05-FEATURE-SPECS/README.md)**
 - [Sơ đồ hệ thống](#4-so-do-he-thong)
 
 ## 2. Module Catalog
