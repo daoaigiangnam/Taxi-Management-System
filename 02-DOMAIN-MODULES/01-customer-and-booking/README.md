@@ -15,7 +15,7 @@ Customer, ContactPoint, Booking, BookingStop, BookingRevision, QuoteReference.
 | BKG-002 | Create scheduled booking | P1 | Planned |
 | [BKG-003](../../docs/05-FEATURE-SPECS/M01-customer-and-booking/BKG-003-validation-and-serviceability.md) | Validation/serviceability | P0 | Draft v0.1 |
 | [BKG-004](../../docs/05-FEATURE-SPECS/M01-customer-and-booking/BKG-004-pickup-destination-and-ordered-stops.md) | Pickup/destination/ordered stops | P0 | Draft v0.1 |
-| BKG-005 | Booking revision/change request | P1 | Planned |
+| [BKG-005](../../docs/05-FEATURE-SPECS/M01-customer-and-booking/BKG-005-booking-amendment-and-change-request.md) | Booking revision/change request | P1 | Draft v0.1 |
 | BKG-006 | Cancel booking/policy | P1 | Planned |
 | BKG-007 | Duplicate detection/warning | P2 | Planned |
 | BKG-008 | Search/detail/timeline | P0 | Planned |
