@@ -1,307 +1,312 @@
-# 01 — FULL BUSINESS & SYSTEM BLUEPRINT (KPMG FUTURE TAXI BASELINE)
+# 01 — THIẾT KẾ NGHIỆP VỤ VÀ HỆ THỐNG TOÀN DIỆN TAXI MAI LINH
+## Cơ sở: Quy trình Taxi tương lai và yêu cầu hệ thống của KPMG
 
-**Document ID:** TAXI-BIZ-001 · **Version:** 0.1 · **Status:** DRAFT FOR BUSINESS VALIDATION  
-**Source baseline:** *MLG_Luu do va mo ta quy trinh & Yeu cau _Dieu hanh taxi_v3.docx*, KPMG, 2015, 90 pages.  
-**Navigation:** [Repository README](../README.md) · [System Overview](../00-OVERVIEW.md)
+**Mã tài liệu:** TAXI-BIZ-001 · **Phiên bản:** 0.2 · **Trạng thái:** DỰ THẢO — CHỜ NGHIỆP VỤ XÁC NHẬN  
+**Tài liệu nguồn:** *MLG_Luu do va mo ta quy trinh & Yeu cau _Dieu hanh taxi_v3.docx*, KPMG, năm 2015, 90 trang.  
+**Điều hướng:** [README kho tài liệu](../README.md) · [Tài liệu tổng quan hệ thống](../00-OVERVIEW.md)
 
-> This document translates the KPMG future-state taxi operating processes and requirements into a system-wide business/design baseline. It is not a claim that every 2015 policy remains current. Preserve source requirements, identify gaps, and obtain business approval before implementation.
+> Tài liệu này chuyển hóa các quy trình điều hành Taxi tương lai và yêu cầu hệ thống trong tài liệu KPMG thành bản thiết kế nghiệp vụ và hệ thống ở cấp toàn nền tảng. Không mặc định mọi chính sách năm 2015 vẫn còn hiệu lực. Các yêu cầu nguồn được bảo toàn, các điểm còn thiếu được đánh dấu và phải được chủ nghiệp vụ phê duyệt trước khi triển khai.
 
-## 1. Executive understanding
+## 1. Nhận thức tổng thể
 
-The target is not merely a ride-hailing app. It is an integrated Taxi Operations Platform supporting customer demand intake through multiple channels, call-center operations, dispatch and fleet allocation, driver execution, marketing/queue stations, pre-booking, long-distance fixed fares, return-leg utilization, shared rides, billing/payment, customer feedback, operational control, management reporting and enterprise integration.
+Hệ thống mục tiêu không chỉ là một ứng dụng gọi xe. Đây là **Nền tảng Điều hành Taxi tích hợp**, hỗ trợ xuyên suốt từ tiếp nhận nhu cầu khách hàng qua nhiều kênh, tổng đài, điều phối và phân bổ xe, tác nghiệp tài xế, điểm tiếp thị/khu vực sắp tài, đặt xe trước, cước đường dài cố định, khai thác chiều về, đi chung/đi ghép, lập hóa đơn và thanh toán, chăm sóc khách hàng, kiểm soát vận hành, báo cáo quản trị đến tích hợp các hệ thống doanh nghiệp.
 
-KPMG defines process documentation as narrative process descriptions with inputs/outputs, flow diagrams and step catalogues with responsible roles. The source explicitly states that these future processes should adapt to changing business needs.
+KPMG xác định tài liệu quy trình gồm: mô tả bằng văn bản (đầu vào/đầu ra), lưu đồ quy trình và danh mục các bước kèm người chịu trách nhiệm. Tài liệu nguồn cũng nêu rõ quy trình tương lai cần có khả năng thích ứng khi nhu cầu doanh nghiệp thay đổi.
 
-## 2. KPMG source inventory and traceability
+## 2. Danh mục quy trình KPMG và truy vết yêu cầu
 
-### 2.1 Future-state processes (Part A)
-| Source ID | Process | Main business scope | Primary roles |
+### 2.1. Các quy trình tương lai — Phần A
+
+| Mã nguồn | Tên quy trình | Phạm vi nghiệp vụ chính | Vai trò chính |
 |---|---|---|---|
-| TO.P1 | Customer requests taxi by Call Center | Call, missed call, new/remind/change/cancel, call-center entry, dispatch, driver response, pickup, trip, payment, feedback | Customer, Call Center Agent, Dispatcher, Driver |
-| TO.P2 | Customer uses App | Login, request, route/fare estimate, long-distance choice, nearby vehicle display/selection, driver acceptance, arrival, trip, invoice/payment/feedback | Customer, System, Dispatcher, Driver |
-| TO.P3 | Marketing point with station operator | Taxi request at staffed marketing/queue point and end-to-end fulfillment | Customer, Station Operator, Dispatcher, Driver |
-| TO.P4 | Queue area without station operator | Geofence/queue-area handling, unicast/broadcast, taxi staging queue, dispatch by queue order, trip/payment | Customer, Dispatcher, Driver |
-| TO.P5 | Customer requests by SMS | Parse defined SMS syntax, validate, booking reference, dispatch and trip | Customer, System, Dispatcher, Driver |
-| TO.P6 | Customer requests by Chat | Chat intake/agent handling and end-to-end service | Customer, Agent, Dispatcher, Driver |
-| TO.P7 | Customer requests by Web | Authenticated web request, booking reference, confirmation/change/cancel and service | Customer, System, Dispatcher, Driver |
-| TO.P8 | Advance booking | Advance request from app/web/phone/email/chat/SMS, confirmation, scheduling, dispatch before pickup | Customer, Agent, Dispatcher, Driver |
-| TO.P9 | Long-distance fare | Long-distance fixed fare, route/distance/time conditions, trip, extra charges, invoice/payment/feedback | Customer, Driver, Dispatcher |
+| TO.P1 | Khách hàng yêu cầu Taxi qua Tổng đài | Gọi đến, gọi nhỡ, yêu cầu mới/nhắc/thay đổi/hủy, tổng đài nhập yêu cầu, điều xe, tài xế phản hồi, đón khách, thực hiện chuyến, thanh toán và phản hồi | Khách hàng, Điện thoại viên, Điều hành, Tài xế |
+| TO.P2 | Khách hàng sử dụng Ứng dụng | Đăng nhập, yêu cầu xe, ước tính lộ trình/cước, chọn phương án đường dài, xem/chọn xe gần, tài xế nhận, đến đón, thực hiện chuyến, hóa đơn/thanh toán/phản hồi | Khách hàng, Hệ thống, Điều hành, Tài xế |
+| TO.P3 | Khách yêu cầu tại Điểm tiếp thị có nhân viên điều hành điểm | Tiếp nhận yêu cầu tại điểm có nhân viên và tổ chức phục vụ từ đầu đến cuối | Khách hàng, Điều hành điểm tiếp thị, Điều hành tổng đài, Tài xế |
+| TO.P4 | Khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm | Xử lý khu vực sắp tài, phát yêu cầu unicast/broadcast, hàng đợi xe, điều xe theo thứ tự sắp tài, chuyến đi và thanh toán | Khách hàng, Điều hành, Tài xế |
+| TO.P5 | Khách hàng yêu cầu Taxi qua Tin nhắn SMS | Phân tích cú pháp SMS, kiểm tra hợp lệ, cấp mã đặt chỗ, điều xe và thực hiện chuyến | Khách hàng, Hệ thống, Điều hành, Tài xế |
+| TO.P6 | Khách hàng yêu cầu Taxi qua Chat | Tiếp nhận qua chat, nhân viên xử lý và cung cấp dịch vụ từ đầu đến cuối | Khách hàng, Nhân viên tiếp nhận, Điều hành, Tài xế |
+| TO.P7 | Khách hàng yêu cầu Taxi qua Web | Yêu cầu trên web có xác thực, mã đặt chỗ, xác nhận/thay đổi/hủy và phục vụ | Khách hàng, Hệ thống, Điều hành, Tài xế |
+| TO.P8 | Khách hàng đặt xe trước | Đặt trước qua ứng dụng/web/điện thoại/email/chat/SMS, xác nhận, lập lịch và phát điều xe trước giờ đón | Khách hàng, Nhân viên tiếp nhận, Điều hành, Tài xế |
+| TO.P9 | Cước phí đường dài | Cước cố định đường dài, điều kiện tuyến đường/khoảng cách/thời gian, chuyến đi, phụ trội, hóa đơn/thanh toán/phản hồi | Khách hàng, Tài xế, Điều hành |
 
-### 2.2 Functional requirement families (Part B)
-| Source IDs | Capability group | Requirement intent |
+### 2.2. Các nhóm yêu cầu chức năng — Phần B
+
+| Mã nguồn | Nhóm năng lực | Nội dung yêu cầu |
 |---|---|---|
-| TO.A | Customer | Multi-channel booking, request changes/cancellation, long-distance, return-leg, fare/distance estimate, shared ride, ETA, nearby cars/driver selection, account, payment, feedback |
-| TO.B | Driver | Unicast/broadcast demand feed, list/map, marketing-point demand, register pickup, visibility of other requests, navigation, staging queue, long-distance/return-leg, cancellation |
-| TO.C | MLG Dispatcher/Control | Search fleet/trips, manage long-distance tariffs and marketing/queue locations, waiting/reminder lists, trip data, vehicle status, assign/cancel assignment, demand forecasting, pre-booking list, service directory |
-| TO.D | Call Center Agent | Enter requests, identify caller and saved addresses, change/cancel, reminder counts, waiting lists, address shortcuts, missed calls, VIP/interest customer flags, marketing-point flags, service directory |
-| TO.E | Marketing-point operations | Request taxis to point, FIFO queue, configurable wait/queue distance, manual assignment, operator GPS, operating hours, performance and latent-demand capture |
-| TO.F | Controls | Fare calculation and revenue recording, demand spike alerts, one-driver/one-customer assignment control, authentication, role/group permissions, event/security logs |
-| TO.G | Demand reporting | Demand by phone/customer/area/street/ward/district/zone, marketing/queue point, long-distance mode, vehicle class, new callers, period and comparable period |
-| TO.H | Revenue reporting | Operating/occupied km, revenue by customer/area/point/driver/long-distance mode/call, productivity and utilization |
-| TO.I | Operations reporting | Trips, pickup success/failure, no assignment, dispatch/pickup time, waiting time, driver cancellations/refusals, long pickup time, lost property, accident, technical issue, complaints, internal nonconformance, security incidents |
-| TO.J | Technical | 20,000 concurrent drivers, 5,000 concurrent customer requests, mobile platforms and integrations with CRM/HR/accounting systems |
+| TO.A | Phục vụ khách hàng | Đặt xe đa kênh, thay đổi/hủy yêu cầu, đường dài, chiều về, ước tính cước/khoảng cách, đi chung, thời gian chờ dự kiến, xem/chọn xe và tài xế gần, tài khoản, thanh toán, đánh giá |
+| TO.B | Phục vụ tài xế | Nhận yêu cầu theo unicast/broadcast, danh sách/bản đồ, nhu cầu tại điểm tiếp thị, đăng ký đón, xem yêu cầu khác, dẫn đường, hàng đợi sắp tài, đường dài/chiều về, hủy đăng ký |
+| TO.C | Phục vụ Điều hành Mai Linh | Tìm kiếm xe/chuyến, quản lý giá đường dài và điểm tiếp thị/khu vực sắp tài, danh sách khách chờ/nhắc xe, dữ liệu chuyến, trạng thái xe, chỉ định/hủy chỉ định, dự báo nhu cầu, danh sách đặt trước, danh bạ dịch vụ |
+| TO.D | Phục vụ Điện thoại viên | Nhập yêu cầu, nhận diện người gọi và địa chỉ lưu, thay đổi/hủy, đếm số lần nhắc, danh sách chờ, phím tắt địa chỉ, cuộc gọi nhỡ, nhận biết khách VIP/khách hàng quan tâm, điểm tiếp thị, danh bạ dịch vụ |
+| TO.E | Phục vụ Điều hành điểm tiếp thị | Yêu cầu xe về điểm, hàng đợi FIFO, thời gian chờ/khoảng cách sắp tài có thể cấu hình, chỉ định thủ công, GPS nhân viên, giờ hoạt động, hiệu quả điểm và ghi nhận nhu cầu tiềm năng |
+| TO.F | Yêu cầu kiểm soát | Tính và ghi nhận doanh thu cước, cảnh báo tăng đột biến nhu cầu, kiểm soát một xe đăng ký cho một yêu cầu, xác thực, phân quyền vai trò/nhóm, nhật ký sự kiện và bảo mật |
+| TO.G | Báo cáo nhu cầu | Nhu cầu theo số điện thoại/khách hàng/khu vực/đường/phường/quận, điểm tiếp thị/khu vực sắp tài, loại hình đường dài, chủng loại xe, khách mới, thời gian và so sánh cùng kỳ |
+| TO.H | Báo cáo doanh thu | Km vận doanh/km có khách, doanh thu theo khách hàng/khu vực/điểm/tài xế/loại hình đường dài/cuộc gọi, năng suất và hiệu suất sử dụng xe |
+| TO.I | Báo cáo vận hành | Cuốc xe, đón thành công/thất bại, không có xe nhận, thời gian điều xe/đón, thời gian chờ, tài xế hủy/từ chối, đón lâu, hành lý thất lạc, tai nạn, sự cố kỹ thuật, khiếu nại, không phù hợp nội bộ và sự cố an ninh |
+| TO.J | Yêu cầu kỹ thuật | 20.000 tài xế kết nối đồng thời, 5.000 yêu cầu khách hàng đồng thời, nền tảng di động và tích hợp CRM/nhân sự/kế toán |
 
-The source classifies many requirements as **Phải có / Cần có / Tùy chọn**. Preserve those source priority labels in the traceability register; do not silently translate them into a new delivery priority without review.
+Tài liệu nguồn phân loại yêu cầu theo mức **Phải có / Cần có / Tùy chọn**. Phải giữ nguyên mức ưu tiên nguồn trong bảng truy vết; không tự ý đổi thành thứ tự triển khai mới khi chưa được rà soát.
 
-## 3. Target business capability map
+## 3. Bản đồ năng lực nghiệp vụ mục tiêu
 
-### 3.1 Demand and customer channels
-- Customer App (smartphone/tablet), Web portal, hotline/voice, SMS, email, chat, marketing point/station, partner/API channels (extension proposal).
-- Customer identity, caller recognition, contact points, saved addresses, VIP/interest segments, special service directory.
-- New request, reminder, change, cancellation, scheduled request, request tracking/session, notifications and feedback.
+### 3.1. Tiếp nhận nhu cầu và các kênh khách hàng
+- Ứng dụng khách hàng trên điện thoại/máy tính bảng, cổng Web, tổng đài thoại, SMS, email, chat, điểm tiếp thị/điểm đón; kênh đối tác/API là hướng mở rộng đề xuất.
+- Định danh khách hàng, nhận diện số gọi đến, thông tin liên hệ, địa chỉ đã lưu, phân nhóm VIP/khách hàng quan tâm và danh bạ dịch vụ đặc thù.
+- Tiếp nhận yêu cầu mới, nhắc xe, thay đổi, hủy, đặt trước, theo dõi mã/phiên đặt xe, thông báo và phản hồi.
 
-### 3.2 Booking and service request
-- Capture pickup (address/place/GPS), optional destination, vehicle class/model, quantity, pickup time, contact, special instructions.
-- Normalize and validate address, zone/serviceability, duplicate detection, request code/reference.
-- Immediate and advance bookings; amendments and cancellations with history.
-- Multi-vehicle booking, subject to capacity and policy.
-- Request lifecycle and channel-neutral Booking record.
+### 3.2. Đặt xe và yêu cầu dịch vụ
+- Thu thập điểm đón (địa chỉ/địa danh/GPS), điểm đến nếu có, loại/dòng xe, số lượng xe, thời gian đón, liên hệ và ghi chú.
+- Chuẩn hóa/kiểm tra địa chỉ, khu vực có cung cấp dịch vụ, phát hiện yêu cầu trùng, cấp mã yêu cầu/mã đặt chỗ.
+- Đặt xe đi ngay và đặt xe trước; thay đổi/hủy có lưu lịch sử.
+- Đặt nhiều xe theo nhu cầu, phụ thuộc năng lực cung ứng và chính sách được duyệt.
+- Quản lý vòng đời yêu cầu và bản ghi Booking thống nhất, không phụ thuộc kênh tiếp nhận.
 
-### 3.3 Dispatch and fleet supply
-- Unicast to available cars in configurable radius/zone; broadcast system-wide only under dispatcher-controlled conditions.
-- Show requests in list/map, route distance, ETA and relevant request details.
-- Driver self-selection/registration and dispatcher assignment.
-- Prevent more than one car registering for the same customer request.
-- Track accept/refuse/cancel reasons and repeated refusal/cancellation.
-- Waiting-customer and reminder queues; demand surge alerts; manual fallback.
-- Separate availability, dispatch eligibility, location freshness and connectivity.
+### 3.3. Điều phối và nguồn cung xe
+- Phát unicast đến xe trống trong bán kính/khu vực cấu hình; chỉ phát broadcast toàn hệ thống khi có điều kiện và được Điều hành kiểm soát.
+- Hiển thị yêu cầu dạng danh sách/bản đồ, khoảng cách theo lộ trình, ETA và thông tin cần thiết.
+- Tài xế tự đăng ký nhận khách hoặc Điều hành chỉ định xe.
+- Ngăn không cho nhiều xe cùng đăng ký một yêu cầu khách hàng.
+- Ghi nhận chấp nhận/từ chối/hủy và lý do; theo dõi trường hợp từ chối/hủy lặp lại.
+- Danh sách khách chờ/nhắc xe, cảnh báo nhu cầu tăng đột biến và phương án xử lý thủ công.
+- Phân biệt trạng thái sẵn sàng, điều kiện đủ để nhận điều xe, độ mới của vị trí GPS và tình trạng kết nối.
 
-### 3.4 Marketing points and queue areas
-- Define normal/special marketing points and unmanned queue areas.
-- Point master data: name, address, contacts, contract reference, characteristics, hours, queue capacity/demand and operator.
-- Driver arrival and FIFO registration; max queue capacity; distance eligibility; turn timer; skip to next driver; operator intervention with audit.
-- Operator location, request-to-point, point utilization, latent demand and revenue performance.
-- Do not merge marketing-point queue position with ordinary dispatch candidate ranking.
+### 3.4. Điểm tiếp thị và khu vực sắp tài
+- Khai báo điểm tiếp thị bình thường/đặc biệt và khu vực sắp tài không có nhân viên.
+- Dữ liệu điểm: tên, địa chỉ, liên hệ, mã hợp đồng, đặc điểm, giờ hoạt động, sức chứa/nhu cầu xe và nhân viên phụ trách.
+- Tài xế đến điểm và đăng ký theo FIFO (đến trước phục vụ trước); kiểm soát sức chứa, khoảng cách hợp lệ, thời gian đến lượt, chuyển lượt cho xe kế tiếp và quyền can thiệp có nhật ký.
+- Theo dõi vị trí nhân viên, yêu cầu xe về điểm, hiệu suất khai thác, nhu cầu tiềm năng và doanh thu điểm.
+- Không gộp thứ tự hàng đợi tại điểm tiếp thị với thứ hạng xe trong thuật toán điều phối thông thường.
 
-### 3.5 Driver and trip execution
-- Driver identity, employee/driver number, vehicle, current state, trip assignment.
-- Driver app: demand list/map, register/withdraw, accept/refuse, pickup navigation, arrival, customer contact, start meter/trip, destination, route trace, completion, invoice and feedback context.
-- Capture pickup/dropoff timestamps and GPS/odometer/telematics distance where available.
-- Driver may cancel accepted pickup under policy; notify customer/dispatcher and return request to queue or exception handling.
-- Lost property, accident/collision, technical fault, security incident (e.g. code 313 in source), customer complaint and internal nonconformance cases.
+### 3.5. Tài xế và thực hiện chuyến
+- Hồ sơ tài xế, số tài/mã nhân viên, xe, trạng thái hiện tại và phân công chuyến.
+- Ứng dụng tài xế: danh sách/bản đồ yêu cầu, đăng ký/hủy đăng ký, chấp nhận/từ chối, dẫn đường đến đón, xác nhận đến nơi, liên hệ khách, bắt đầu đồng hồ/chuyến, điểm đến, vết hành trình, kết thúc, hóa đơn và thông tin phản hồi.
+- Ghi nhận thời điểm đón/trả và khoảng cách GPS/công-tơ/thiết bị giám sát hành trình khi có dữ liệu.
+- Tài xế có thể hủy nhận đón theo chính sách; phải thông báo khách hàng/Điều hành và đưa yêu cầu về hàng đợi hoặc luồng xử lý ngoại lệ.
+- Quản lý hành lý thất lạc, va chạm/tai nạn, lỗi kỹ thuật, sự cố an ninh (ví dụ mã 313 trong tài liệu nguồn), khiếu nại khách hàng và sự không phù hợp nội bộ.
 
-### 3.6 Pricing and commercial service types
-- Metered fare based on actual distance and waiting time.
-- Long-distance fixed fare by route and vehicle class; one-way and two-way; threshold and extra distance/time surcharge.
-- Return-leg/vãng lai chiều về matching and pricing.
-- Shared ride: match compatible customers on a common route and split fare; this is marked optional in source.
-- Estimate route distance/fare; display direct long-distance vs return-leg alternatives and estimated vehicle wait.
-- Invoice line items: metered/fixed fare, long-distance surcharge, toll, tip, driver/employee identifier, pickup/dropoff and trip date/time.
-- Fare rules are versioned and applied consistently across channel, trip, invoice and finance.
+### 3.6. Giá cước và loại hình dịch vụ thương mại
+- Cước đồng hồ theo cự ly thực tế và thời gian chờ.
+- Cước cố định đường dài theo tuyến và dòng xe; một chiều/hai chiều; ngưỡng áp dụng và phụ trội khi vượt cự ly/thời gian.
+- Ghép nối và tính giá chuyến chiều về/vãng lai chiều về.
+- Đi chung/đi ghép: tìm khách có tuyến tương thích và chia cước; tài liệu nguồn xếp chức năng này ở mức tùy chọn.
+- Ước tính cự ly/cước; hiển thị lựa chọn đi đường dài trực tiếp hoặc xe trống chiều về và thời gian chờ dự kiến.
+- Chi tiết hóa đơn: cước đồng hồ/cước cố định, phụ trội đường dài, phí cầu đường, tiền tip, mã tài xế/nhân viên, điểm đón/trả và ngày giờ chuyến.
+- Quy tắc giá phải có phiên bản và được áp dụng nhất quán giữa kênh đặt xe, chuyến đi, hóa đơn và tài chính.
 
-### 3.7 Payment and customer experience
-- Source payment methods: cash, MCC postpaid card, credit/debit/ATM card, voucher.
-- Payment evidence/receipt and reconciliation.
-- Mandatory service rating with optional written comments; feedback through app, hotline, random outbound survey, email/chat/CSKH.
-- Complaint, lost property, accident, technical and security case management.
+### 3.7. Thanh toán và trải nghiệm khách hàng
+- Phương thức trong tài liệu nguồn: tiền mặt, thẻ trả sau MCC, thẻ tín dụng/thẻ ATM và voucher.
+- Bằng chứng thanh toán/biên nhận và đối soát.
+- Đánh giá chất lượng dịch vụ là bắt buộc theo quy trình nguồn; nội dung góp ý là tùy chọn. Tiếp nhận qua ứng dụng, tổng đài, khảo sát gọi ra ngẫu nhiên, email/chat/CSKH.
+- Quản lý khiếu nại, hành lý thất lạc, tai nạn, sự cố kỹ thuật và sự cố an ninh.
 
-### 3.8 Control Tower and reporting
-- Live vehicle state and map; demand/long-wait/reminder/no-assignment lists.
-- Search by revenue, location, time, route, pickup/dropoff, vehicle color/class, driver and plate.
-- Demand, revenue and operations reports with period comparisons.
-- Driver refusal/cancellation, wait time, pickup time and service quality monitoring.
-- Forecast demand by region/time is optional in source; do not treat forecast as mandatory until approved.
+### 3.8. Trung tâm kiểm soát và báo cáo
+- Theo dõi trạng thái xe/bản đồ trực tuyến; danh sách nhu cầu, khách chờ lâu, nhắc xe và yêu cầu chưa có xe nhận.
+- Tìm kiếm theo doanh thu, địa điểm, thời gian, hành trình, điểm đón/trả, màu xe, loại xe, tài xế và biển số.
+- Báo cáo nhu cầu, doanh thu, vận hành và so sánh theo kỳ.
+- Giám sát từ chối/hủy của tài xế, thời gian chờ, thời gian đón và chất lượng phục vụ.
+- Dự báo nhu cầu theo khu vực/thời gian là tùy chọn trong tài liệu nguồn; không tự nâng thành bắt buộc khi chưa phê duyệt.
 
-### 3.9 Platform and enterprise integration
-- Authentication and role/group authorization for customers, drivers, call agents, station operators, dispatchers and administrators.
-- Configurable security policy and audit/logging of security-sensitive changes.
-- CRM, HR and accounting integration; integration architecture and data ownership require detailed design.
-- Technical resilience, monitoring, backup, privacy and cyber controls need current requirements beyond the 2015 baseline.
+### 3.9. Nền tảng và tích hợp doanh nghiệp
+- Xác thực và phân quyền theo vai trò/nhóm cho khách hàng, tài xế, điện thoại viên, điều hành điểm, điều hành tổng đài và quản trị viên.
+- Chính sách bảo mật có thể cấu hình; ghi nhật ký các thay đổi nhạy cảm về bảo mật.
+- Tích hợp CRM, nhân sự và kế toán; kiến trúc tích hợp và quyền sở hữu dữ liệu cần được thiết kế chi tiết.
+- Khả năng phục hồi, giám sát, sao lưu, quyền riêng tư và an ninh mạng cần được bổ sung theo yêu cầu hiện hành, ngoài phạm vi tài liệu năm 2015.
 
-## 4. End-to-end operating model
+## 4. Mô hình vận hành xuyên suốt
 
 ```mermaid
 flowchart TD
- A["Customer / Phone / App / Web / SMS / Chat / Email / Marketing Point"] --> B["Capture request"]
- B --> C["Identify customer and resolve saved address"]
- C --> D["Validate pickup, service, vehicle, time"]
- D --> E{"Immediate or advance?"}
- E -->|Advance| F["Schedule booking and confirmation"]
- E -->|Immediate| G["Create ready booking"]
- F --> H["Time-based dispatch release"]
+ A["Khách hàng / Điện thoại / Ứng dụng / Web / SMS / Chat / Email / Điểm tiếp thị"] --> B["Tiếp nhận yêu cầu"]
+ B --> C["Nhận diện khách hàng và tra cứu địa chỉ đã lưu"]
+ C --> D["Kiểm tra điểm đón, dịch vụ, loại xe và thời gian"]
+ D --> E{"Đặt xe đi ngay hay đặt trước?"}
+ E -->|Đặt trước| F["Lập lịch đặt xe và gửi xác nhận"]
+ E -->|Đi ngay| G["Tạo yêu cầu sẵn sàng điều xe"]
+ F --> H["Đến thời điểm, chuyển yêu cầu sang điều phối"]
  G --> H
- H --> I["Apply queue/zone policy"]
- I --> J["Unicast or controlled broadcast"]
- J --> K["Driver self-register / Dispatcher assign"]
- K --> L{"Driver accepts?"}
- L -->|No / withdraw| M["Record reason, notify, retry/escalate"]
+ H --> I["Áp dụng quy tắc khu vực và hàng đợi"]
+ I --> J["Phát unicast hoặc broadcast có kiểm soát"]
+ J --> K["Tài xế tự đăng ký hoặc Điều hành chỉ định"]
+ K --> L{"Tài xế chấp nhận?"}
+ L -->|Không / Hủy đăng ký| M["Ghi lý do, thông báo, phát lại hoặc chuyển cấp xử lý"]
  M --> J
- L -->|Yes| N["Lock effective vehicle assignment"]
- N --> O["Navigate to pickup / arrive / contact"]
- O --> P{"Customer boards?"}
- P -->|No| Q["Wait/no-show/cancel policy"]
- P -->|Yes| R["Verify customer and start trip"]
- R --> S["Metered / fixed long-distance / return-leg / shared fare"]
- S --> T["Complete trip and generate invoice"]
- T --> U["Cash / MCC / card / voucher"]
- U --> V["Feedback / complaint / case"]
- V --> W["Revenue, demand and operations reporting"]
+ L -->|Có| N["Xác lập phân công xe hiệu lực"]
+ N --> O["Di chuyển đến điểm đón / xác nhận đến / liên hệ khách"]
+ O --> P{"Khách đã lên xe?"}
+ P -->|Chưa| Q["Xử lý thời gian chờ / khách không đến / hủy"]
+ P -->|Rồi| R["Xác nhận khách và bắt đầu chuyến"]
+ R --> S["Tính cước đồng hồ / cố định đường dài / chiều về / đi ghép"]
+ S --> T["Kết thúc chuyến và lập hóa đơn"]
+ T --> U["Thu tiền mặt / MCC / thẻ / voucher"]
+ U --> V["Tiếp nhận đánh giá / khiếu nại / hồ sơ sự cố"]
+ V --> W["Báo cáo doanh thu, nhu cầu và vận hành"]
 ```
 
-This is a synthesized target flow. Each source process TO.P1–TO.P9 retains its own channel/station/long-distance variants and must be detailed in its own swimlane.
+Đây là lưu đồ tổng hợp được xây dựng từ các quy trình nguồn. Mỗi quy trình TO.P1–TO.P9 vẫn phải có lưu đồ và swimlane riêng để thể hiện khác biệt theo kênh tiếp nhận, điểm tiếp thị, khu vực sắp tài và dịch vụ đường dài.
 
-## 5. Module architecture mapped to source requirements
+## 5. Kiến trúc Module gắn với yêu cầu KPMG
 
-| Module | Responsibilities | KPMG traceability |
+| Module | Trách nhiệm | Truy vết KPMG |
 |---|---|---|
-| M01 Customer & Booking | Customer/contact/address, channel intake, request/change/cancel, immediate/advance booking, request session/reference | TO.P1, P2, P5, P6, P7, P8; TO.A; TO.D |
-| M02 Fleet & Partner | Driver/vehicle master, driver/vehicle status, capability, availability, identity and operational attributes | TO.B; TO.C.12–13; TO.F.8 |
-| M03 Dispatch & Queue | Unicast/broadcast, candidate feed, self-registration, dispatcher assignment, cancel/refusal, one-car-per-request, wait/reminder and queue rules | TO.P1–P8; TO.B.1–B.10; TO.C.8–C.15; TO.F.5–F.6 |
-| M04 Driver App & Trip | Driver interaction, pickup, arrival, customer verification, trip/meter, GPS trace, completion and exceptions | TO.P1–P9; TO.B; TO.C.12–C.13 |
-| M05 Pricing & Payment | Estimate, metered fare, fixed long-distance, surcharge, return-leg, shared ride, invoice, cash/MCC/card/voucher | TO.P2, P8, P9; TO.A.8–A.11, A.16; TO.F.1–F.4 |
-| M06 Marketing Point & Queue Area | Marketing point master, staffed/unmanned queue, FIFO, capacity, operator, location and point performance | TO.P3–P4; TO.B.3, B.7; TO.C.5–C.7; TO.E |
-| M07 Call Center & Control Tower | Agent desktop, caller recognition, saved address, shortcut, missed calls, reminder, wait list, dispatch console, overrides | TO.P1, P3–P7; TO.C; TO.D |
-| M08 Customer Service & Case Management | Rating, complaint, lost property, accident, technical fault, security event, internal nonconformance | TO.P1–P9; TO.A.17; TO.I.9 |
-| M09 Reporting & Analytics | Demand, revenue, productivity, fleet utilization, driver quality, operational exceptions, comparisons, optional forecasting | TO.C; TO.G; TO.H; TO.I |
-| M10 Platform, Integration & Operations | Identity, role/group, audit/security logs, CRM/HR/accounting integration, capacity, resiliency and operations | TO.F.7–F.9; TO.J |
+| M01 — Khách hàng và Đặt xe | Khách hàng/liên hệ/địa chỉ, tiếp nhận đa kênh, tạo/sửa/hủy yêu cầu, đặt ngay/đặt trước, phiên và mã đặt xe | TO.P1, P2, P5, P6, P7, P8; TO.A; TO.D |
+| M02 — Đội xe và Đối tác | Hồ sơ tài xế/xe, trạng thái, năng lực, khả năng sẵn sàng, định danh và thuộc tính khai thác | TO.B; TO.C.12–13; TO.F.8 |
+| M03 — Điều phối và Hàng đợi | Unicast/broadcast, danh sách xe ứng viên, tài xế tự đăng ký, Điều hành chỉ định, hủy/từ chối, chống trùng xe, quy tắc khách chờ/nhắc xe/hàng đợi | TO.P1–P8; TO.B.1–B.10; TO.C.8–C.15; TO.F.5–F.6 |
+| M04 — Ứng dụng Tài xế và Chuyến đi | Tác nghiệp tài xế, đón khách, xác nhận đến, xác minh khách, đồng hồ/chuyến, GPS, kết thúc và ngoại lệ | TO.P1–P9; TO.B; TO.C.12–C.13 |
+| M05 — Giá cước và Thanh toán | Ước tính, cước đồng hồ, cước cố định đường dài, phụ trội, chiều về, đi ghép, hóa đơn, tiền mặt/MCC/thẻ/voucher | TO.P2, P8, P9; TO.A.8–A.11, A.16; TO.F.1–F.4 |
+| M06 — Điểm tiếp thị và Khu vực sắp tài | Danh mục điểm, hàng đợi có/không có nhân viên, FIFO, sức chứa, điều hành điểm, vị trí và hiệu quả điểm | TO.P3–P4; TO.B.3, B.7; TO.C.5–C.7; TO.E |
+| M07 — Tổng đài và Trung tâm kiểm soát | Màn hình điện thoại viên, nhận diện người gọi, địa chỉ lưu/phím tắt, cuộc gọi nhỡ, nhắc xe, danh sách chờ, màn hình điều phối và quyền can thiệp | TO.P1, P3–P7; TO.C; TO.D |
+| M08 — Chăm sóc khách hàng và Quản lý sự cố | Đánh giá, khiếu nại, hành lý thất lạc, tai nạn, lỗi kỹ thuật, sự cố an ninh và sự không phù hợp nội bộ | TO.P1–P9; TO.A.17; TO.I.9 |
+| M09 — Báo cáo và Phân tích | Nhu cầu, doanh thu, năng suất, hiệu suất đội xe, chất lượng tài xế, ngoại lệ vận hành, so sánh và dự báo tùy chọn | TO.C; TO.G; TO.H; TO.I |
+| M10 — Nền tảng, Tích hợp và Vận hành CNTT | Định danh, vai trò/nhóm, nhật ký kiểm soát/bảo mật, tích hợp CRM/nhân sự/kế toán, năng lực tải, khả năng phục hồi và vận hành | TO.F.7–F.9; TO.J |
 
-Module grouping is a proposed software boundary. KPMG process roles remain business responsibilities; final org/RACI needs MLG confirmation.
+Việc nhóm thành Module là đề xuất ranh giới phần mềm. Vai trò quy trình trong KPMG vẫn là trách nhiệm nghiệp vụ; cơ cấu tổ chức và ma trận RACI cuối cùng cần Mai Linh xác nhận.
 
-## 6. Canonical business objects and data ownership
+## 6. Đối tượng nghiệp vụ chuẩn và quyền sở hữu dữ liệu
 
-| Object | Business meaning | Owning Module |
+| Đối tượng | Ý nghĩa nghiệp vụ | Module sở hữu |
 |---|---|---|
-| Customer / ContactPoint / SavedAddress | Person/company, contact and remembered pickup addresses | M01 |
-| Booking / BookingRevision | Customer's service request and its revisions | M01 |
-| DispatchRun / Candidate / Offer | A dispatch attempt, evaluated options and driver invitation | M03 |
-| Assignment | Effective driver/vehicle allocation for a request | M03 |
-| Driver / Vehicle / DriverState | Driver and vehicle master/operational state | M02 |
-| QueueRegistration | Driver's FIFO position at a marketing/queue point | M06 |
-| Trip / TripEvent / RouteTrace | Actual pickup, journey, stops and completion evidence | M04 |
-| FareQuote / FareResult / Invoice | Estimate, final calculation and invoice | M05 |
-| Payment / PaymentEvidence | Collection/refund and evidence | M05 |
-| ServiceCase / IncidentCase | Complaint, accident, lost property, technical/security event | M08 |
-| Demand/Revenue/Operations projections | Read-optimized reporting measures | M09 |
-| User/Role/AuditEvent | Identity, permissions and security history | M10 |
+| Customer / ContactPoint / SavedAddress | Khách hàng cá nhân/doanh nghiệp, thông tin liên hệ và địa chỉ đón đã lưu | M01 |
+| Booking / BookingRevision | Yêu cầu dịch vụ của khách và các lần chỉnh sửa | M01 |
+| DispatchRun / Candidate / Offer | Một lượt điều phối, các xe được đánh giá và lời mời nhận cuốc | M03 |
+| Assignment | Phân công tài xế/xe có hiệu lực cho yêu cầu | M03 |
+| Driver / Vehicle / DriverState | Hồ sơ tài xế, xe và trạng thái khai thác | M02 |
+| QueueRegistration | Đăng ký vị trí FIFO của tài xế tại điểm tiếp thị/khu vực sắp tài | M06 |
+| Trip / TripEvent / RouteTrace | Việc đón khách, hành trình, điểm dừng và bằng chứng hoàn tất | M04 |
+| FareQuote / FareResult / Invoice | Báo giá ước tính, kết quả tính cước và hóa đơn | M05 |
+| Payment / PaymentEvidence | Thu tiền/hoàn tiền và bằng chứng thanh toán | M05 |
+| ServiceCase / IncidentCase | Khiếu nại, tai nạn, hành lý thất lạc, sự cố kỹ thuật/an ninh | M08 |
+| Demand/Revenue/Operations projections | Dữ liệu tổng hợp phục vụ báo cáo, tối ưu đọc | M09 |
+| User/Role/AuditEvent | Định danh, quyền và lịch sử kiểm soát | M10 |
 
-A proposed new platform may separate DispatchRun, Offer and Assignment even where the legacy process uses one “registered pickup” status. This is a design refinement, not a source claim.
+Nền tảng mới có thể tách DispatchRun, Offer và Assignment thành các đối tượng riêng, dù quy trình cũ chỉ dùng một trạng thái “đăng ký đón khách”. Đây là đề xuất thiết kế để làm rõ nghiệp vụ, không phải nội dung được KPMG khẳng định.
 
-## 7. Important source parameters — preserve, do not hard-code
+## 7. Các tham số quan trọng trong tài liệu nguồn — giữ lại, không lập trình cố định
 
-| Source parameter | KPMG value/example | Treatment |
+| Tham số nguồn | Giá trị/ví dụ KPMG | Cách xử lý |
 |---|---:|---|
-| Long-distance threshold | Over 30 km | Historical source rule; business revalidation required |
-| App/Web nearby cars | 5 nearest cars, 500 m radius | Configurable policy; validate current customer experience |
-| Driver pickup registration eligibility | Within 500 m by actual route | Source requirement; confirm current routing basis |
-| Queue/staging eligibility | Within 100 m | Source parameter; configurable/revalidate |
-| Queue turn response | 60 seconds | Source parameter; configurable/revalidate |
-| Driver cancellation lock before advance pickup | 20 minutes | Source parameter; confirm operating policy |
-| Dispatcher waiting list | More than 5 minutes | Source parameter; configure per operation |
-| Pre-booking dispatch list | 60 minutes before pickup | Source parameter; configurable |
-| Missed-call display | 30 seconds | Source parameter; configure |
-| VIP temporary address reset | 5 hours | Source rule; validate customer/address policy |
-| Driver dispatcher-assignment refusals | More than 2 times | Source parameter; confirm escalation |
-| Driver average pickup alert | Over 8 minutes | Source report threshold; revalidate |
-| Driver cancellation report | More than 3 times | Source report threshold; revalidate |
-| Technical capacity | 20,000 concurrent drivers; 5,000 simultaneous customer requests | KPMG 2015 sizing requirement; new load model and performance test required |
+| Ngưỡng đường dài | Trên 30 km | Quy tắc lịch sử; cần nghiệp vụ xác nhận lại |
+| Số xe gần khách trên App/Web | 5 xe gần nhất, bán kính 500 m | Chính sách cấu hình; đánh giá lại trải nghiệm hiện tại |
+| Điều kiện tài xế đăng ký đón | Trong 500 m theo lộ trình thực | Yêu cầu nguồn; xác nhận cách tính tuyến hiện hành |
+| Điều kiện đăng ký sắp tài | Trong 100 m | Tham số nguồn; cấu hình và xác nhận lại |
+| Thời gian chờ đến lượt tại điểm | 60 giây | Tham số nguồn; cấu hình và xác nhận lại |
+| Khóa hủy nhận cuốc trước giờ đón đặt trước | 20 phút | Tham số nguồn; xác nhận chính sách vận hành |
+| Danh sách khách chờ của Điều hành | Trên 5 phút | Tham số nguồn; cấu hình theo hoạt động |
+| Thời điểm đưa chuyến đặt trước vào danh sách điều xe | 60 phút trước giờ đón | Tham số nguồn; có thể cấu hình |
+| Thời gian hiển thị cuộc gọi nhỡ | 30 giây | Tham số nguồn; cấu hình |
+| Thời gian trả địa chỉ VIP về mặc định | 5 giờ | Quy tắc nguồn; xác nhận chính sách dữ liệu khách hàng |
+| Số lần từ chối xe do Điều hành chỉ định | Trên 2 lần | Tham số nguồn; xác nhận cấp xử lý |
+| Cảnh báo thời gian đón bình quân của tài xế | Trên 8 phút | Ngưỡng báo cáo nguồn; xác nhận lại |
+| Báo cáo tài xế hủy đón | Trên 3 lần | Ngưỡng báo cáo nguồn; xác nhận lại |
+| Năng lực kỹ thuật | 20.000 tài xế đồng thời; 5.000 yêu cầu khách hàng đồng thời | Yêu cầu quy mô năm 2015; phải lập mô hình tải mới và kiểm thử hiệu năng |
 
-None of these numbers should be coded as constants. Store approved operational parameters with effective date, scope, version, change history and authorized owner.
+Không tham số nào trong bảng được viết cố định trong mã nguồn. Các tham số vận hành đã duyệt phải được lưu với ngày hiệu lực, phạm vi áp dụng, phiên bản, lịch sử thay đổi và người có thẩm quyền.
 
-## 8. Functional requirement priority preservation
+## 8. Bảo toàn mức ưu tiên yêu cầu chức năng
 
-- **Phải có:** preserve as mandatory source requirement pending current owner confirmation.
-- **Cần có:** preserve as needed source requirement; sequencing is a project decision.
-- **Tùy chọn:** optional source capability; do not silently omit from long-term product roadmap.
-- **TBD:** where source is silent, ambiguous, has placeholders (e.g. [xxx]) or policy has since changed.
+- **Phải có:** giữ là yêu cầu bắt buộc theo tài liệu nguồn, chờ chủ nghiệp vụ hiện tại xác nhận.
+- **Cần có:** giữ là yêu cầu cần thiết theo nguồn; thứ tự triển khai là quyết định của dự án.
+- **Tùy chọn:** giữ là năng lực tùy chọn trong nguồn; không tự ý loại khỏi lộ trình sản phẩm dài hạn.
+- **Chưa xác định (TBD):** áp dụng khi tài liệu nguồn không nêu, diễn đạt chưa rõ, còn chỗ trống như [xxx] hoặc chính sách có thể đã thay đổi.
 
-Every requirement needs a traceability record: source ID, page, verbatim/faithful summary, source priority, target module/feature, acceptance criteria, current disposition (retain/change/defer/retire), owner and approval.
+Mỗi yêu cầu phải có bản ghi truy vết gồm: mã nguồn, số trang, nội dung nguyên văn/tóm lược trung thành, mức ưu tiên nguồn, Module/tính năng đích, tiêu chí nghiệm thu, quyết định hiện tại (giữ nguyên/thay đổi/hoãn/loại bỏ), người phụ trách và phê duyệt.
 
-## 9. Critical business rules to model explicitly
+## 9. Các quy tắc nghiệp vụ trọng yếu phải mô hình hóa
 
-1. Multi-channel intake creates a common request record while preserving originating channel and source interaction.
-2. Caller recognition uses phone number and saved addresses, but agent must be able to choose/correct the pickup location.
-3. Change/cancel must find the right request by booking reference or verified customer/call context.
-4. A single customer request cannot be assigned to multiple effective vehicles.
-5. Unicast is default in the source; broadcast is controlled by MLG operations for exceptional conditions.
-6. Driver self-registration and dispatcher assignment are distinct paths; both require conflict control.
-7. Driver refusal/withdrawal/cancellation must be recorded with reason and reflected in customer/dispatcher experience.
-8. Marketing-point FIFO is separate from ordinary request dispatch and respects capacity, eligibility, turn timeout and override authority.
-9. Advance booking must be scheduled and released for dispatch according to an approved configurable lead time.
-10. Trip start/end, actual distance, waiting time and route trace provide evidence for fare and reporting.
-11. Metered, fixed long-distance, return-leg and shared-ride calculations are separate fare modes with explicit eligibility.
-12. Invoice components, payment instrument and evidence must reconcile to trip and revenue.
-13. Customer rating is mandatory in the source process; comments are optional.
-14. Role/group permissions and security event logging apply across the platform.
+1. Mọi kênh tiếp nhận phải tạo về một bản ghi yêu cầu thống nhất, đồng thời lưu lại kênh và tương tác nguồn.
+2. Nhận diện người gọi dựa trên số điện thoại và địa chỉ đã lưu; điện thoại viên vẫn phải được chọn/sửa điểm đón.
+3. Thay đổi/hủy phải tìm đúng yêu cầu theo mã đặt xe hoặc ngữ cảnh cuộc gọi/khách hàng đã xác minh.
+4. Một yêu cầu khách hàng không được có nhiều xe phân công hiệu lực cùng lúc.
+5. Unicast là cơ chế mặc định trong tài liệu nguồn; broadcast do Điều hành Mai Linh kiểm soát trong tình huống đặc biệt.
+6. Tài xế tự đăng ký và Điều hành chỉ định là hai luồng khác nhau; cả hai đều phải có kiểm soát tranh chấp.
+7. Từ chối/rút đăng ký/hủy của tài xế phải có lý do và phản ánh tới khách hàng/Điều hành.
+8. FIFO tại điểm tiếp thị tách biệt với điều phối yêu cầu thông thường; phải tuân thủ sức chứa, điều kiện hợp lệ, hết thời gian đến lượt và quyền can thiệp.
+9. Đặt xe trước phải được lập lịch và chuyển sang điều phối theo thời điểm dẫn trước đã được phê duyệt, có thể cấu hình.
+10. Bắt đầu/kết thúc chuyến, cự ly thực tế, thời gian chờ và vết hành trình là căn cứ tính cước và báo cáo.
+11. Cước đồng hồ, cước cố định đường dài, chiều về và đi ghép là các phương thức tính giá riêng, có điều kiện áp dụng rõ ràng.
+12. Thành phần hóa đơn, phương thức thanh toán và bằng chứng phải đối soát được với chuyến và doanh thu.
+13. Đánh giá của khách hàng là bắt buộc theo quy trình nguồn; nội dung góp ý là tùy chọn.
+14. Phân quyền vai trò/nhóm và ghi nhật ký sự kiện bảo mật áp dụng xuyên suốt nền tảng.
 
-## 10. Exception catalogue for full design
+## 10. Danh mục tình huống ngoại lệ phải đặc tả
 
-| ID | Scenario | Required behavior to specify |
+| Mã | Tình huống | Hành vi hệ thống cần đặc tả |
 |---|---|---|
-| EX-01 | Missed call | Callback window by area/time; persistent display when existing open request |
-| EX-02 | Caller changes phone number | Agent search by address/reference and controlled identity confirmation |
-| EX-03 | Invalid SMS syntax | Return correction instructions; do not create a false booking |
-| EX-04 | Address ambiguous/unmapped | Resolve by shortcut/place/pin/manual review |
-| EX-05 | No car in unicast radius | Wait, expand radius, broadcast by authorized override, or inform customer |
-| EX-06 | Broadcast surge | Guarded enable/disable, audit, capacity/rate safeguards |
-| EX-07 | Multiple drivers register | Atomic winner; reject competing registrations |
-| EX-08 | Driver refuses/withdraws | Record reason, notify and return request to eligible pool |
-| EX-09 | Driver cancels after en-route | Notify customer; re-dispatch or operator escalation |
-| EX-10 | Customer changes/cancels after assignment | Validate timing/state; notify driver; release/reassign safely |
-| EX-11 | Driver arrives/customer absent | Wait timer, contact, no-show evidence and policy |
-| EX-12 | Queue capacity full | Deny/hold queue registration and expose demand to operator |
-| EX-13 | Queue turn timeout | Skip to next eligible driver, record skipped turn/reason |
-| EX-14 | GPS stale/network outage | Mark location freshness; do not assume vehicle is near/available |
-| EX-15 | Long-distance fixed fare no longer applicable | Re-quote/obtain customer consent before changing fare mode |
-| EX-16 | Return-leg vehicle matching | Check direction, time window, vehicle availability and fixed fare |
-| EX-17 | Shared ride incompatible route/capacity | Do not combine; preserve separate bookings/fares |
-| EX-18 | Trip distance/telematics mismatch | Exception review and controlled fare adjustment |
-| EX-19 | Payment instrument/evidence mismatch | Reconciliation queue; do not mark paid without evidence |
-| EX-20 | Accident/lost property/security event | Case workflow, escalation, evidence, privacy and audit |
-| EX-21 | Duplicate callback/request | Idempotent handling and one financial/booking effect |
-| EX-22 | CRM/HR/accounting integration unavailable | Durable retry/reconciliation; operational fallback |
+| EX-01 | Cuộc gọi nhỡ | Thời hạn gọi lại theo khu vực/thời điểm; tiếp tục hiển thị nếu đang có yêu cầu mở |
+| EX-02 | Khách gọi bằng số điện thoại khác | Điện thoại viên tìm theo địa chỉ/mã yêu cầu và xác minh danh tính có kiểm soát |
+| EX-03 | SMS sai cú pháp | Trả hướng dẫn chỉnh sửa; không tạo yêu cầu giả |
+| EX-04 | Địa chỉ không rõ/không có trên bản đồ | Xử lý bằng phím tắt/địa danh/ghim bản đồ/kiểm tra thủ công |
+| EX-05 | Không có xe trong bán kính unicast | Tiếp tục chờ, mở rộng bán kính, broadcast theo quyền hoặc thông báo khách |
+| EX-06 | Nhu cầu broadcast tăng đột biến | Bật/tắt có kiểm soát, ghi nhật ký, bảo vệ năng lực và giới hạn phát |
+| EX-07 | Nhiều tài xế cùng đăng ký một yêu cầu | Chỉ một tài xế thắng theo cơ chế nguyên tử; từ chối các đăng ký cạnh tranh |
+| EX-08 | Tài xế từ chối/rút đăng ký | Ghi lý do, thông báo và đưa yêu cầu về nhóm xe đủ điều kiện |
+| EX-09 | Tài xế hủy sau khi đang trên đường đón | Thông báo khách; điều phối lại hoặc chuyển Điều hành xử lý |
+| EX-10 | Khách thay đổi/hủy sau khi đã phân công | Kiểm tra thời điểm/trạng thái; báo tài xế; giải phóng hoặc phân công lại an toàn |
+| EX-11 | Tài xế đến nhưng không gặp khách | Bộ đếm thời gian chờ, liên hệ, bằng chứng khách không đến và chính sách xử lý |
+| EX-12 | Điểm sắp tài đã đủ sức chứa | Từ chối/giữ chờ đăng ký và hiển thị nhu cầu cho nhân viên điểm |
+| EX-13 | Hết thời gian đến lượt tại điểm | Chuyển lượt cho tài xế đủ điều kiện kế tiếp, ghi nhận lượt bị bỏ qua/lý do |
+| EX-14 | GPS cũ hoặc mất kết nối mạng | Đánh dấu độ mới vị trí; không mặc định xe đang gần hoặc đang sẵn sàng |
+| EX-15 | Không còn đủ điều kiện áp dụng cước đường dài cố định | Tính lại báo giá và lấy xác nhận khách trước khi đổi phương thức cước |
+| EX-16 | Ghép xe khai thác chiều về | Kiểm tra hướng tuyến, khung thời gian, xe sẵn sàng và giá cố định |
+| EX-17 | Tuyến/sức chứa không phù hợp để đi ghép | Không ghép; giữ các yêu cầu và cước riêng |
+| EX-18 | Sai lệch cự ly chuyến và dữ liệu giám sát hành trình | Đưa vào hàng đợi kiểm tra và điều chỉnh cước có kiểm soát |
+| EX-19 | Phương thức thanh toán và bằng chứng không khớp | Đưa vào đối soát; không đánh dấu đã thanh toán khi chưa có bằng chứng |
+| EX-20 | Tai nạn/hành lý thất lạc/sự cố an ninh | Quy trình hồ sơ sự cố, chuyển cấp, bằng chứng, quyền riêng tư và nhật ký |
+| EX-21 | Gọi lại/yêu cầu bị gửi trùng | Xử lý lũy đẳng (idempotent), chỉ tạo một tác động đặt xe/tài chính |
+| EX-22 | Tích hợp CRM/nhân sự/kế toán bị gián đoạn | Lưu hàng đợi gửi lại bền vững, đối soát và có phương án vận hành dự phòng |
 
-## 11. Required detailed artifacts before DEV implementation
+## 11. Các tài liệu chi tiết bắt buộc trước khi giao DEV
 
-### System-wide
-- Business context, stakeholder map and approved scope.
-- E2E process map and role swimlanes for all TO.P1–TO.P9.
-- Canonical business glossary and requirement traceability.
-- Context/bounded-context map and ownership.
-- Cross-domain state machines and transition tables.
-- Logical ERD/data dictionary.
-- API/event catalog and integration contracts.
-- Role/action/data-scope permission matrix.
-- NFR, capacity, SLO, backup/DR, observability and security.
-- Decision register and policy parameter catalogue.
+### 11.1. Cấp toàn hệ thống
+- Bối cảnh nghiệp vụ, danh sách bên liên quan và phạm vi được phê duyệt.
+- Bản đồ quy trình E2E và swimlane theo vai trò cho toàn bộ TO.P1–TO.P9.
+- Từ điển nghiệp vụ chuẩn và ma trận truy vết yêu cầu.
+- Bản đồ ngữ cảnh/ranh giới nghiệp vụ và quyền sở hữu.
+- State Machine liên miền và bảng chuyển trạng thái.
+- ERD logic và từ điển dữ liệu.
+- Danh mục API/sự kiện và hợp đồng tích hợp.
+- Ma trận phân quyền theo vai trò/hành động/phạm vi dữ liệu.
+- Yêu cầu phi chức năng, năng lực tải, SLO, sao lưu/khôi phục thảm họa, giám sát và bảo mật.
+- Sổ quyết định và danh mục tham số chính sách.
 
-### Per Module
-- Module charter and boundaries.
-- Detailed workflows: happy path, alternate, exception, recovery.
-- Business rule catalogue with source references.
-- State machine and transition guards.
-- Entity model, field dictionary and constraints.
-- UI screen map and state behavior.
-- API/commands/events and integration contracts.
-- Permissions, audit and operational controls.
-- Feature catalog with source traceability.
-- Test scenarios and acceptance evidence.
+### 11.2. Cấp Module
+- Mục tiêu, phạm vi và ranh giới Module.
+- Quy trình chi tiết: luồng chính, luồng thay thế, ngoại lệ và khôi phục.
+- Danh mục quy tắc nghiệp vụ có dẫn chiếu nguồn.
+- State Machine và điều kiện chuyển trạng thái.
+- Mô hình thực thể, từ điển trường dữ liệu và ràng buộc.
+- Sơ đồ màn hình và hành vi từng trạng thái giao diện.
+- API/lệnh/sự kiện và hợp đồng tích hợp.
+- Phân quyền, nhật ký và kiểm soát vận hành.
+- Danh mục tính năng có truy vết yêu cầu nguồn.
+- Kịch bản kiểm thử và bằng chứng nghiệm thu.
 
-### Per Feature
-Objective, actor, scope, preconditions, postconditions, step-by-step flow, decision tables, field validations, UI states, API schemas, DB changes, authorization, audit, idempotency/concurrency, error handling, logging/metrics, test cases, Given/When/Then acceptance, dependencies and approver.
+### 11.3. Cấp tính năng
+Mỗi tính năng phải có: mục tiêu, tác nhân, phạm vi, điều kiện trước/sau, luồng từng bước, bảng quyết định, kiểm tra dữ liệu, trạng thái giao diện, lược đồ API, thay đổi CSDL, phân quyền, nhật ký, tính lũy đẳng/đồng thời, xử lý lỗi, log/chỉ số giám sát, ca kiểm thử, tiêu chí nghiệm thu Given/When/Then, phụ thuộc và người phê duyệt.
 
-## 12. Delivery sequence
+## 12. Trình tự triển khai đề xuất
 
-1. Approve source inventory and disposition of all KPMG TO.P requirements.
-2. Approve system-wide operating model and TO.P1–TO.P9 E2E flows.
-3. Design Module boundaries and detailed Module flows.
-4. Resolve state, data, permission and integration contracts.
-5. Specify Booking → Dispatch → Trip features first, including Call Center, App, SMS/Web and marketing/queue variants.
-6. Specify pricing/payment, long-distance/return-leg/shared ride and finance controls.
-7. Specify CSKH, reporting, security, integration and operational support.
-8. DEV/QA/UAT implement and accept feature by feature.
+1. Phê duyệt danh mục tài liệu nguồn và quyết định giữ/thay đổi/loại bỏ đối với toàn bộ yêu cầu TO.P.
+2. Phê duyệt mô hình vận hành toàn hệ thống và các luồng E2E TO.P1–TO.P9.
+3. Chốt ranh giới Module và luồng chi tiết từng Module.
+4. Thống nhất trạng thái, dữ liệu, phân quyền và hợp đồng tích hợp.
+5. Đặc tả trước các tính năng Booking → Dispatch → Trip, bao gồm biến thể Tổng đài, Ứng dụng, SMS/Web và điểm tiếp thị/khu vực sắp tài.
+6. Đặc tả giá cước/thanh toán, đường dài/chiều về/đi ghép và kiểm soát tài chính.
+7. Đặc tả CSKH, báo cáo, bảo mật, tích hợp và hỗ trợ vận hành.
+8. DEV/QA/UAT phát triển, kiểm thử và nghiệm thu từng tính năng trước khi tích hợp.
 
-## 13. Open decisions / current validation required
-- Which 2015 KPMG requirements remain active, have changed, or are retired?
-- Current booking channels and telephony/CRM capabilities.
-- Current DIRECT/PARTNER fleet model and contract/settlement rules.
-- Current fare tariff, long-distance threshold, return-leg pricing and shared-ride policy.
-- Current map/routing/GPS/telematics source and location freshness.
-- Current unicast/broadcast policy, dispatch radius, driver choice and operator override.
-- Current marketing-point and queue-area operating model.
-- Current payment methods and MCC/voucher lifecycle.
-- Current organizational roles, branch/zone hierarchy and authorization.
-- Current load profile and performance targets.
-- Current privacy, retention, cybersecurity and regulatory requirements.
+## 13. Các quyết định còn mở — cần xác nhận hiện trạng
 
-## 14. Approval status
-This blueprint is a structured translation and expansion of the KPMG 2015 source. It is **not approved business policy**. Business owners must validate every retained/changed requirement and all parameters before baselining.
+- Yêu cầu KPMG năm 2015 nào còn hiệu lực, đã thay đổi hoặc cần loại bỏ?
+- Các kênh đặt xe hiện tại và năng lực tổng đài/CRM hiện tại.
+- Mô hình đội xe DIRECT/PARTNER hiện tại và quy tắc hợp đồng/quyết toán.
+- Biểu giá hiện tại, ngưỡng đường dài, giá chiều về và chính sách đi ghép.
+- Nguồn bản đồ/định tuyến/GPS/giám sát hành trình và độ mới dữ liệu vị trí.
+- Chính sách unicast/broadcast, bán kính điều xe, quyền chọn xe của tài xế và quyền can thiệp của Điều hành.
+- Mô hình vận hành điểm tiếp thị và khu vực sắp tài hiện tại.
+- Phương thức thanh toán và vòng đời MCC/voucher hiện tại.
+- Vai trò tổ chức, phân cấp chi nhánh/khu vực và phân quyền hiện tại.
+- Lưu lượng tải thực tế và chỉ tiêu hiệu năng hiện tại.
+- Yêu cầu hiện hành về quyền riêng tư, lưu trữ dữ liệu, an ninh mạng và tuân thủ pháp luật.
+
+## 14. Trạng thái phê duyệt
+
+Tài liệu này là bản cấu trúc hóa và mở rộng có truy vết từ tài liệu KPMG năm 2015. **Đây chưa phải chính sách nghiệp vụ đã được phê duyệt.** Chủ nghiệp vụ phải xác nhận từng yêu cầu được giữ/thay đổi và toàn bộ tham số trước khi chốt đường cơ sở triển khai.
