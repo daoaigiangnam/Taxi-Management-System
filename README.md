@@ -7,6 +7,7 @@
 **Branch:** `main` · **Documentation baseline:** 0.1 · **Status:** DRAFT — cần Business/Architecture review.
 
 ## 1. Đọc từ đây
+- **[01 — FULL BUSINESS & SYSTEM BLUEPRINT (KPMG Future Taxi)](./01-FULL-BUSINESS-SYSTEM-BLUEPRINT.md)** — cơ sở nghiệp vụ, 9 quy trình tương lai, nhóm yêu cầu TO.A–TO.J, Module map và tiêu chuẩn đặc tả cho DEV.
 - **[00 — OVERVIEW: Tổng quan hệ thống](./00-OVERVIEW.md)**
 - [Danh mục 10 Module](#2-module-catalog)
 - [Thiết kế xuyên Module](#3-thiet-ke-xuyen-module)
