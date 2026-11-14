@@ -1,7 +1,7 @@
 # 04 — QUY TRÌNH NGHIỆP VỤ ĐẦU CUỐI VÀ SWIMLANE TO.P1–TO.P9
 
 **Mã tài liệu:** TAXI-BIZ-004  
-**Phiên bản:** 0.5  
+**Phiên bản:** 0.6  
 **Trạng thái:** ĐANG XÂY DỰNG — TO.P1–TO.P6 ĐÃ ĐẶC TẢ BẢN ĐẦU; TO.P7–TO.P9 CHƯA ĐẶC TẢ  
 **Nguồn nghiệp vụ:** *MLG_Luu do va mo ta quy trinh & Yeu cau _Dieu hanh taxi_v3.docx*, KPMG, 2015.
 
