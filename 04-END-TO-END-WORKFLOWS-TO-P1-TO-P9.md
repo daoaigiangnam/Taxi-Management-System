@@ -1,8 +1,8 @@
 # 04 — QUY TRÌNH NGHIỆP VỤ ĐẦU CUỐI VÀ SWIMLANE TO.P1–TO.P9
 
 **Mã tài liệu:** TAXI-BIZ-004  
-**Phiên bản:** 0.6  
-**Trạng thái:** ĐANG XÂY DỰNG — TO.P1–TO.P6 ĐÃ ĐẶC TẢ BẢN ĐẦU; TO.P7–TO.P9 CHƯA ĐẶC TẢ  
+**Phiên bản:** 0.7  
+**Trạng thái:** ĐANG XÂY DỰNG — TO.P1–TO.P7 ĐÃ ĐẶC TẢ BẢN ĐẦU; TO.P8–TO.P9 CHƯA ĐẶC TẢ  
 **Nguồn nghiệp vụ:** *MLG_Luu do va mo ta quy trinh & Yeu cau _Dieu hanh taxi_v3.docx*, KPMG, 2015.
 
 > Tài liệu này bám theo mã bước, vai trò và mô tả trong tài liệu KPMG. Không xem quy trình năm 2015 là chính sách hiện hành. Những nội dung KPMG để [xxx], yêu cầu Mai Linh tự quy định hoặc chưa đủ dữ liệu đều được giữ ở trạng thái cần xác nhận. Phần diễn giải thiết kế hệ thống được tách riêng khỏi nội dung nguồn.
@@ -17,7 +17,7 @@
 | TO.P4 | Khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm | Đã dựng luồng và swimlane bản đầu |
 | TO.P5 | Khách hàng yêu cầu Taxi qua SMS | Đã dựng luồng và swimlane bản đầu |
 | TO.P6 | Khách hàng yêu cầu Taxi qua Chat | Đã dựng luồng và swimlane bản đầu |
-| TO.P7 | Khách hàng yêu cầu Taxi qua Web | Chưa đặc tả |
+| TO.P7 | Khách hàng yêu cầu Taxi qua Web | Đã dựng luồng và swimlane bản đầu |
 | TO.P8 | Khách hàng đặt xe trước | Chưa đặc tả |
 | TO.P9 | Cước phí đường dài | Chưa đặc tả |
 
@@ -1259,7 +1259,245 @@ Các nội dung sau là đề xuất thiết kế, không phải nguyên văn y�
 8. Chốt biểu giá, thanh toán, đánh giá và phân tách DIRECT/PARTNER.
 9. Có test case cho khách không đăng nhập, mất phiên Chat, Booking mới/sửa/hủy, tài xế đã đăng ký, Chat gửi lỗi, khách chờ lâu, SMS hủy, tài xế từ chối/hủy chỉ định, sai mã, đón nhầm, Trip, hóa đơn và thanh toán.
 
-## 8. Tiêu chí hoàn thành một quy trình
+
+## 8. TO.P7 — Khách hàng yêu cầu Taxi qua Web
+
+### 8.1. Mục tiêu và phạm vi theo KPMG
+
+Quy trình mô tả việc khách hàng đăng nhập tài khoản trên website Mai Linh, tự đăng ký yêu cầu taxi, theo dõi mã và thông tin đặt chỗ trên tài khoản, xác nhận yêu cầu, hủy hoặc tiếp tục điều phối xe cho đến khi thanh toán và phản hồi.
+
+Theo phần mô tả tổng quan KPMG 2015, khách hàng phải có tài khoản trên website Mai Linh và có thể theo dõi tình trạng yêu cầu trên web. Đây là điểm phân biệt với TO.P6 — Chat, trong đó khách có thể trao đổi với tổng đài viên mà không cần tài khoản thành viên.
+
+### 8.2. Vai trò tham gia
+
+| Vai trò | Trách nhiệm được mô tả trong nguồn |
+|---|---|
+| Khách hàng | Đăng nhập web, nhập yêu cầu, xác nhận/sửa/hủy, theo dõi tình trạng, lên xe, thanh toán và phản hồi |
+| Tổng đài Điều hành | Quản lý yêu cầu, phát yêu cầu Unicast/Broadcast, theo dõi khách chờ lâu, chỉ định xe |
+| Tổng đài viên | Thông báo khách không có xe, nhập hủy khi cần và tiếp nhận khách gọi nhắc |
+| Tài xế | Theo dõi yêu cầu, đăng ký/hủy đăng ký, nhận chỉ định, đến điểm đón, liên hệ khách và thực hiện chuyến |
+| Hệ thống | Tạo mã đặt chỗ, hiển thị thông tin trên tài khoản, cập nhật bản đồ, phát yêu cầu, cập nhật trạng thái và báo cáo |
+
+### 8.3. Luồng tổng thể
+
+```mermaid
+flowchart TD
+ A["Khách hàng đăng nhập Web"] --> B["Nhập thông tin yêu cầu Taxi"]
+ B --> C["Hệ thống tạo mã đặt chỗ"]
+ C --> D["Hiển thị thông tin để khách kiểm tra"]
+ D --> E{"Khách xác nhận?"}
+ E -->|"Cần sửa"| B
+ E -->|"Hủy"| F["Khách hủy trên Web"]
+ F --> G["Hệ thống hủy Booking, giải phóng xe nếu có"]
+ E -->|"Xác nhận"| H{"Đặt xe trước?"}
+ H -->|"Có"| I["Chuyển TO.P8"]
+ H -->|"Không"| J["Phát yêu cầu Unicast / Broadcast"]
+ J --> K["Tài xế theo dõi và đăng ký"]
+ K --> L{"Tài xế hủy đăng ký?"}
+ L -->|"Có"| J
+ L -->|"Không"| M["Theo dõi khách chờ lâu"]
+ M --> N["Gửi thông báo theo kênh Web / SMS / Email / Chat"]
+ N --> O{"Khách hủy?"}
+ O -->|"Có"| G
+ O -->|"Không"| P["Điều hành chỉ định xe gần nhất"]
+ P --> Q{"Tài xế nhận chỉ định?"}
+ Q -->|"Không"| R["Ghi nhận từ chối, chỉ định xe khác"]
+ R --> S{"Đã quá ngưỡng chờ?"}
+ S -->|"Chưa"| P
+ S -->|"Rồi"| T["Thông báo không có xe và xử lý hủy"]
+ T --> G
+ Q -->|"Có"| U["Tài xế đến điểm đón"]
+ K --> U
+ U --> V{"Gặp khách?"}
+ V -->|"Không"| W["Gọi khách và chờ phản hồi"]
+ W --> X{"Khách tiếp tục chờ?"}
+ X -->|"Không"| G
+ X -->|"Có"| Y["Khách lên xe, xác nhận mã đặt chỗ"]
+ V -->|"Có"| Y
+ Y --> Z["Nhập điểm đến và xác định phương thức cước"]
+ Z --> AA{"Chọn cước đường dài?"}
+ AA -->|"Có"| AB["Chuyển TO.P9"]
+ AA -->|"Không"| AC["Thực hiện chuyến"]
+ AB --> AD["Kết thúc chuyến, lập hóa đơn"]
+ AC --> AD
+ AD --> AE["Thanh toán"]
+ AE --> AF["Khách hàng đánh giá dịch vụ"]
+```
+
+**Giới hạn:** Đây là lưu đồ tổng hợp. Các nhánh hủy, chỉ định, tài xế từ chối và khách không có mặt cần đối chiếu bảng bước KPMG và chính sách hiện hành. Lưu đồ không thay thế đặc tả trạng thái Booking/Dispatch.
+
+### 8.4. Diễn giải các bước TO.P7.1–TO.P7.31 theo KPMG
+
+| Mã bước | Hoạt động | Vai trò theo nguồn | Nội dung được mô tả trong KPMG |
+|---|---|---|---|
+| TO.P7.1 | Yêu cầu dịch vụ taxi qua tài khoản Web | Khách hàng | Khách đăng nhập web và nhập điểm đón (địa chỉ cụ thể hoặc địa danh), loại xe 7 chỗ/4 chỗ, hiệu xe, số lượng xe theo loại, thời gian đón (không nhập thì hiểu là đón ngay), số điện thoại liên lạc, điểm đến tùy chọn và ghi chú thêm. Đăng ký thành công thì hệ thống tạo mã đặt chỗ để khách theo dõi |
+| TO.P7.2 | Hiển thị mã và thông tin đặt chỗ trên tài khoản | Tổng đài Điều hành / Hệ thống | Hệ thống tạo mã đặt chỗ và hiển thị/gửi thông tin trên tài khoản khách hàng để theo dõi |
+| TO.P7.3 | Khách hàng xác nhận thông tin đặt chỗ? | Tổng đài Điều hành / Hệ thống | Hệ thống sinh bản thông tin yêu cầu xe để khách kiểm tra và xác nhận. Cần sửa thì quay lại P7.1; muốn hủy thì sang P7.5 |
+| TO.P7.4 | Đặt chỗ trước? | Tổng đài Điều hành / Hệ thống | Nếu đặt trước thì chuyển TO.P8; nếu yêu cầu xe đi ngay thì sang P7.6 |
+| TO.P7.5 | Khách hàng hủy yêu cầu trên Web | Khách hàng | Khách thực hiện hủy trên web; ngay sau khi hủy, hệ thống chuyển trạng thái xe đã đăng ký đón (nếu có) sang xe trống |
+| TO.P7.6 | Phát yêu cầu Unicast/Broadcast | Tổng đài Điều hành / Hệ thống | Unicast mặc định phát đến xe trống trong bán kính [xx km], tham số có thể điều chỉnh. Broadcast phát đến tất cả xe trống toàn hệ thống, do Tổng đài kiểm soát trong tình huống đặc biệt như cao điểm/thiếu xe cục bộ. Hệ thống hiển thị danh sách khách chờ lâu, gồm khách đã/chưa có xe đăng ký |
+| TO.P7.7 | Theo dõi điểm đón được phát | Tài xế | Tài xế theo dõi yêu cầu Unicast/Broadcast và quyết định nhận yêu cầu Unicast hoặc chạy theo Broadcast ở khu vực cao điểm |
+| TO.P7.8 | Đăng ký đón khách | Tài xế / Hệ thống | Tài xế nhấn đăng ký trên ứng dụng. Mỗi thời điểm chỉ đăng ký một yêu cầu; sau đăng ký vẫn thấy các yêu cầu khác và xe ở trạng thái “đón khách”. Ứng dụng hiển thị 10 yêu cầu chưa đăng ký gần nhất theo lộ trình giao thông thực; ngoài bán kính [xxx] km có thể thấy nhưng không đăng ký được |
+| TO.P7.9 | Hủy đăng ký đón khách | Tài xế / Hệ thống | Tài xế nhấn hủy; yêu cầu trở về “chưa có xe đăng ký”, được hiển thị lại cho xe trong bán kính phát; xe trở về trạng thái trống và có thể nhận yêu cầu khác. Hệ thống ghi nhận lịch sử hủy để truy vấn báo cáo định kỳ. Nếu không hủy, tài xế đến điểm đón (P7.21) |
+| TO.P7.10 | Gửi tin nhắn cập nhật tình hình xe | Tổng đài Điều hành / Hệ thống | Dựa vào báo cáo khách chờ lâu chưa có xe, hệ thống gửi thông báo cập nhật. Báo cáo có trường phương thức yêu cầu (SMS, email, chat, web…) để chọn kênh gửi phù hợp. Ví dụ nguồn: thông báo chưa có xe ở khu vực, nêu mã đặt chỗ, đề nghị khách chờ thêm [xxx] phút và hướng dẫn hủy |
+| TO.P7.11 | Hủy yêu cầu qua Web hoặc tin nhắn? | Khách hàng | Nếu khách không đồng ý chờ, nguồn mô tả khách gửi tin nhắn hủy theo cú pháp “HUY [Mã số đặt xe]”. Nếu khách không chờ nhưng không gửi tin nhắn hủy thì hệ thống vẫn tiếp tục chỉ định xe. Tên bước có nhắc Web hoặc tin nhắn, nhưng mô tả chi tiết tập trung vào SMS |
+| TO.P7.12 | Hủy yêu cầu đặt xe | Tổng đài Điều hành / Hệ thống | Hệ thống tự động hủy mã đặt chỗ nếu nhận được tin nhắn hoặc lệnh hủy từ web |
+| TO.P7.13 | Chỉ định xe rước khách | Tổng đài Điều hành / Hệ thống | Nếu không có tin nhắn/lệnh hủy từ web, Tổng đài có quyền chỉ định xe cho khách trong danh sách chờ lâu. Hệ thống lựa chọn xe gần nhất theo lộ trình giao thông thực |
+| TO.P7.14 | Tài xế từ chối chỉ định? | Tài xế / Hệ thống | Tài xế nhấn từ chối hoặc không nhấn chấp nhận sau [xxx] phút thì được xem là từ chối; Tổng đài chỉ định xe khác và hệ thống lập báo cáo tài xế từ chối. Nếu chấp nhận, nguồn dẫn sang TO.P5.18 |
+| TO.P7.15 | Cần thông báo khách hàng không có xe? | Tổng đài viên | Nếu đã chỉ định nhiều xe trong [xxx] phút mà vẫn không có xe đăng ký thì thông báo khách (P7.16). Nếu chưa hết thời hạn thì tiếp tục chỉ định xe gần nhất theo lộ trình thực; hệ thống ghi nhận từ chối và dừng chỉ định khi Tổng đài nhập hủy |
+| TO.P7.16 | Thông báo khách hàng không có xe | Tổng đài viên | Khi đã chỉ định nhiều xe trong [xxx] phút mà vẫn không có xe, Tổng đài viên dựa vào danh sách chờ lâu và thời gian [xxx] phút kể từ lần gọi khách cuối cùng để thông báo; sau đó tiến hành hủy theo P7.17 |
+| TO.P7.17 | Hủy yêu cầu đặt xe | Tổng đài viên / Hệ thống | Nếu khách không chờ, Tổng đài viên nhập hủy; yêu cầu biến khỏi danh sách chờ lâu, bản đồ và danh sách trên ứng dụng tài xế. Xe đã đăng ký được trả về trạng thái trống |
+| TO.P7.18 | Khách hàng gọi nhắc | Khách hàng | Khách chờ lâu có thể gọi Tổng đài viên để nhắc xe |
+| TO.P7.19 | Ghi nhận số lần nhắc | Tổng đài viên / Hệ thống | Tra cứu theo số điện thoại; nếu khách dùng số khác thì tra theo mã đặt chỗ. Tổng đài viên chọn yêu cầu và nhập số lần nhắc; xem xe đã đăng ký hay chưa và ETA để thông báo khách |
+| TO.P7.20 | Nhận chỉ định đón khách | Tài xế / Hệ thống | Tài xế thấy yêu cầu được chỉ định và nhấn đồng ý. Nguồn ghi nhận tài xế vẫn thấy yêu cầu khác và có thể hủy nhận chỉ định. Hệ thống ghi nhận xe đã nhận; chính sách ưu đãi/khuyến khích cần Mai Linh thảo luận |
+| TO.P7.21 | Đến điểm đón khách | Tài xế | Tài xế đến điểm đón |
+| TO.P7.22 | Thấy khách? | Tài xế | Nếu thấy khách thì sang TO.P7.25; nếu không thấy thì sang TO.P7.23. Bản nguồn lại dẫn chiếu TO.P5.24/TO.P5.23, cần xác nhận là lỗi tham chiếu |
+| TO.P7.23 | Tài xế gọi khách báo xe đến | Tài xế | Gọi khách báo xe đến; nếu không liên lạc được có thể báo cáo để nhận cuốc khác. Thời gian chờ khách cần quy định, có thể khác nhau theo vị trí |
+| TO.P7.24 | Khách hàng phản hồi | Khách hàng / Tổng đài viên | Khách hủy thì Tổng đài viên nhập hủy để xe nhận yêu cầu khác; khách vẫn chờ thì yêu cầu nhanh chóng ra xe. Nếu khách không bắt máy, cần quy định số lần gọi lại và thời gian. Nguồn dẫn chiếu nhầm sang P5.17/P5.25 |
+| TO.P7.25 | Khách lên xe, thông báo điểm đến | Tài xế / Khách hàng | Khách lên xe, thông báo điểm đến và tài xế xác nhận mã đặt chỗ. Nếu khách không có mã/chưa gọi Tổng đài thì tài xế báo hủy đăng ký do đón nhầm để Booking trở về chưa có xe đăng ký. Nếu mã khách cung cấp khác mã tài xế đã đăng ký, tài xế hủy mã cũ và báo Tổng đài mã đặt chỗ hoặc số điện thoại khách đã dùng |
+| TO.P7.26 | Bấm đồng hồ, nhập điểm đến | Tài xế / Hệ thống | Tài xế bấm đồng hồ, nhập điểm đến để ứng dụng hướng dẫn đường; thông báo lộ trình với khách. Nếu khách yêu cầu, tài xế có thể hiển thị cước ước tính |
+| TO.P7.27 | Có thể áp dụng cước phí đường dài? | Tài xế / Hệ thống | Nếu đủ điều kiện, hệ thống hiển thị cước đường dài để khách chọn cước cố định hoặc cước đồng hồ. Chọn cước đường dài chuyển TO.P9; chọn cước đồng hồ sang P7.28 |
+| TO.P7.28 | Thực hiện dịch vụ chở khách | Tài xế / Hệ thống | Tài xế chở khách đến nơi; hành trình được lưu vết bởi hệ thống quản lý hành trình trên xe |
+| TO.P7.29 | Kết thúc hành trình và xuất hóa đơn | Tài xế / Hệ thống | Hóa đơn gồm cước đồng hồ, cước cố định/phụ thu vượt lộ trình đường dài, phí cầu đường, tiền tip, số tài/MSNV, điểm đầu/cuối và ngày giờ |
+| TO.P7.30 | Thanh toán | Khách hàng / Tài xế | Khách kiểm tra hóa đơn và thanh toán. KPMG 2015 liệt kê tiền mặt, MCC, thẻ tín dụng/thẻ ATM và voucher; tài xế kẹp chứng từ tương ứng vào hóa đơn |
+| TO.P7.31 | Khách hàng phản hồi chất lượng dịch vụ | Khách hàng | Chấm điểm dịch vụ là bắt buộc theo nguồn; góp ý/phàn nàn chi tiết là tùy chọn. Kênh phản hồi được nguồn nêu gồm ứng dụng Mai Linh Taxi, khách gọi Tổng đài hoặc Tổng đài gọi khách ngẫu nhiên |
+
+### 8.5. Swimlane theo vai trò
+
+```mermaid
+flowchart TB
+ subgraph KH["Khách hàng"]
+  A1["Đăng nhập và nhập yêu cầu trên Web"] --> A2["Kiểm tra, xác nhận hoặc sửa Booking"]
+  A2 --> A3["Theo dõi mã và tình trạng đặt chỗ"]
+  A3 --> A4["Hủy Web / nhận thông báo / gọi nhắc"]
+  A4 --> A5["Lên xe, thanh toán và đánh giá"]
+ end
+ subgraph HT["Hệ thống Web / Booking"]
+  B1["Kiểm tra dữ liệu đăng ký"] --> B2["Tạo mã đặt chỗ"]
+  B2 --> B3["Hiển thị thông tin trên tài khoản"]
+  B3 --> B4["Nhận xác nhận / sửa / hủy"]
+ end
+ subgraph DH["Tổng đài Điều hành / Tổng đài viên"]
+  C1["Phát Unicast / Broadcast"] --> C2["Theo dõi danh sách khách chờ lâu"]
+  C2 --> C3["Gửi cập nhật theo kênh yêu cầu"]
+  C3 --> C4["Chỉ định xe gần nhất"]
+  C4 --> C5["Thông báo không có xe / nhập hủy"]
+  C2 --> C6["Tra cứu và ghi nhận khách gọi nhắc"]
+ end
+ subgraph TX["Tài xế"]
+  D1["Theo dõi yêu cầu trên ứng dụng"] --> D2["Đăng ký hoặc hủy đăng ký"]
+  D2 --> D3["Nhận chỉ định nếu được chọn"]
+  D3 --> D4["Đến điểm đón và liên hệ khách"]
+  D4 --> D5["Xác nhận mã đặt chỗ"]
+  D5 --> D6["Thực hiện chuyến và lập hóa đơn"]
+ end
+ A1 --> B1
+ B3 --> A2
+ B4 --> C1
+ C1 --> D1
+ D1 --> C2
+ C4 --> D3
+ C5 --> A4
+ D4 --> A5
+ D6 --> A5
+```
+
+Swimlane thể hiện trách nhiệm ở mức tổng quát. Chi tiết trạng thái và sự kiện giữa Booking, Dispatch, Web và ứng dụng tài xế sẽ được chuẩn hóa trong tài liệu State Machine sau khi hoàn thành TO.P1–TO.P9.
+
+### 8.6. Dữ liệu đầu vào và đầu ra
+
+| Nhóm | Dữ liệu theo tài liệu nguồn |
+|---|---|
+| Tài khoản Web | Tài khoản khách hàng đăng nhập; thông tin liên hệ |
+| Đầu vào Booking | Điểm đón (địa chỉ/địa danh), loại xe, hiệu xe, số lượng xe theo loại, thời gian đón, số điện thoại, điểm đến tùy chọn, ghi chú |
+| Xác nhận | Mã đặt chỗ, bản thông tin yêu cầu, trạng thái xác nhận/sửa/hủy |
+| Theo dõi | Tình trạng yêu cầu trên tài khoản Web |
+| Điều phối | Xe trống, Unicast/Broadcast, bán kính phát, đăng ký/hủy đăng ký, chỉ định và kết quả nhận/từ chối |
+| Thông báo | Kênh nguồn yêu cầu (SMS, email, Chat, Web), nội dung cập nhật, mã đặt chỗ, phản hồi hủy |
+| Theo dõi chờ | Thời gian chờ, số lần nhắc, lần liên hệ gần nhất, tình trạng xe và ETA |
+| Đón khách | Điểm đón, thời điểm xe đến, liên hệ khách, mã đặt chỗ khách cung cấp |
+| Trip/hóa đơn | Điểm đến, dữ liệu đồng hồ, hành trình, cước, phụ thu, phí cầu đường, tip, số tài/MSNV, ngày giờ |
+| Kết quả | Thanh toán, điểm đánh giá bắt buộc và ý kiến tùy chọn |
+
+### 8.7. Điểm bàn giao Module theo kiến trúc đề xuất
+
+| Hoạt động nghiệp vụ | Module sở hữu/đảm nhiệm | Bàn giao |
+|---|---|---|
+| Đăng nhập và quản lý tài khoản khách hàng | M08 — Identity & Access phối hợp M01 — Booking | Danh tính và quyền truy cập khách |
+| Tạo/sửa/hủy Booking, mã đặt chỗ, trạng thái xác nhận | M01 — Booking | Booking hợp lệ, có kênh nguồn Web |
+| Hồ sơ, trạng thái và vị trí xe/tài xế | M02 — Fleet/Driver | Nguồn lực đủ điều kiện cung cấp cho điều phối |
+| Phát yêu cầu, đăng ký/hủy, chỉ định và hàng đợi | M03 — Dispatch & Queue | Offer/Assignment và lịch sử điều phối |
+| Đến đón, bắt đầu/kết thúc Trip, hành trình | M04 — Trip | Sự kiện Trip |
+| Biểu giá, tính cước, hóa đơn và thanh toán | M05 — Fare & Payment | Kết quả tính cước và giao dịch |
+| Doanh thu, công nợ và đối soát | M06 — Finance | Dữ liệu tài chính phân tách DIRECT/PARTNER |
+| Màn hình giám sát, can thiệp và CSKH | M07 — Control Center | Lệnh điều hành đến Module sở hữu dữ liệu |
+| Người dùng, vai trò, quyền và nhật ký | M08 — Identity & Access | Quyền truy cập và dấu vết kiểm toán |
+| Gửi thông báo đa kênh và trạng thái nhà cung cấp | M09 — Integration | Thông điệp, trạng thái gửi/nhận và mã giao dịch |
+| Báo cáo khách chờ, nhắc, hủy đăng ký, từ chối | M10 — Reporting | Báo cáo từ dữ liệu Module nguồn |
+
+### 8.8. Các điểm cần Mai Linh xác nhận
+
+| Mã quyết định | Nội dung chưa được chốt | Căn cứ |
+|---|---|---|
+| P7-DEC-01 | Cơ chế đăng ký, xác thực, khôi phục mật khẩu và khóa tài khoản Web | TO.P7.1; phần tổng quan yêu cầu tài khoản |
+| P7-DEC-02 | Bộ trường bắt buộc, danh mục loại/hiệu xe và số lượng xe tối đa trong một Booking | TO.P7.1 |
+| P7-DEC-03 | Chuẩn hóa địa chỉ/địa danh, định vị điểm đón và xử lý địa chỉ không tìm thấy | TO.P7.1 |
+| P7-DEC-04 | Quy tắc thời gian đón: mặc định đi ngay, múi giờ, giờ quá khứ và giới hạn thời gian đặt trước | TO.P7.1, P7.4 |
+| P7-DEC-05 | Có bắt buộc điểm đến; điều kiện và cách hiển thị lộ trình/cước ước tính | TO.P7.1 |
+| P7-DEC-06 | Thời điểm tạo mã đặt chỗ: trước hay sau khi khách xác nhận; mã có hết hạn không | TO.P7.1–P7.3 |
+| P7-DEC-07 | Quy tắc sửa Booking sau khi đã có xe đăng ký/chỉ định; cách xác nhận tài xế đã nhận thay đổi | TO.P7.3 |
+| P7-DEC-08 | Hủy Web có hiệu lực ngay hay cần xác nhận; xử lý khi xe đang nhận/chạy đến điểm đón | TO.P7.5, P7.12 |
+| P7-DEC-09 | Bán kính Unicast, điều kiện Broadcast và quyền bật/tắt | TO.P7.6 |
+| P7-DEC-10 | Bán kính đăng ký, danh sách 10 yêu cầu và giới hạn một yêu cầu/tài xế | TO.P7.8 |
+| P7-DEC-11 | Ngưỡng khách chờ lâu và mẫu thông báo theo từng kênh SMS/Email/Chat/Web | TO.P7.10 |
+| P7-DEC-12 | Kênh hủy chính thức: Web, SMS hay cả hai; xác thực lệnh hủy và chống hủy nhầm | TO.P7.11–P7.12 |
+| P7-DEC-13 | Thời hạn phản hồi chỉ định [xxx], số lần chỉ định và tổng thời gian chờ trước khi báo không có xe | TO.P7.13–P7.16 |
+| P7-DEC-14 | Quy tắc khách gọi nhắc, tra cứu bằng số điện thoại/mã đặt chỗ và giới hạn số lần nhắc | TO.P7.18–P7.19 |
+| P7-DEC-15 | Tài xế có được hủy nhận chỉ định sau khi đã đồng ý; thời điểm khóa nguồn lực | TO.P7.20 |
+| P7-DEC-16 | Thời gian chờ khách tại điểm đón, số lần gọi lại và điều kiện giải phóng xe | TO.P7.22–P7.24 |
+| P7-DEC-17 | Quy tắc xác minh mã đặt chỗ khi lên xe; xử lý không có mã, sai mã hoặc đón nhầm | TO.P7.25 |
+| P7-DEC-18 | Điều kiện/cước đường dài, phương thức thanh toán và thang điểm phản hồi hiện hành | TO.P7.27–P7.31 |
+
+### 8.9. Diễn giải thiết kế hệ thống — tách biệt với yêu cầu nguồn
+
+Các nội dung sau là đề xuất thiết kế, không phải nguyên văn yêu cầu KPMG:
+
+- Tài khoản Web phải gắn với định danh khách hàng; cần xác thực email/số điện thoại theo chính sách được phê duyệt. Không coi việc đăng nhập thành công là bằng chứng số điện thoại liên hệ đã được xác minh nếu chưa có bước xác thực.
+- Tách tài khoản khách hàng, phiên đăng nhập, Booking và lịch sử thao tác. Một khách có thể tạo nhiều Booking; một Booking có thể được sửa nhiều lần.
+- Lưu bản chụp thông tin Booking tại thời điểm khách xác nhận; mọi lần sửa sau đó phải có lịch sử trước/sau, người sửa và thời điểm.
+- Mã đặt chỗ phải duy nhất, khó đoán; thao tác sửa/hủy phải kiểm tra quyền sở hữu Booking và trạng thái hiện tại.
+- Hủy Web phải phát sự kiện cho M03 để thu hồi Offer/Assignment và giải phóng xe theo cơ chế chống xung đột. Không để trạng thái Web báo hủy trong khi xe vẫn tiếp tục đến đón.
+- Trạng thái thông báo phải tách khỏi trạng thái Booking. Email/SMS/Chat gửi lỗi không được tự động hủy Booking.
+- Trường “phương thức yêu cầu” cần được lưu thành kênh nguồn bất biến của Booking để chọn kênh thông báo; trường này không nên bị thay đổi chỉ vì khách gọi nhắc hoặc nhận thêm thông báo ở kênh khác.
+- Nếu khách cung cấp điểm đến, chỉ hiển thị cước ước tính với nhãn ước tính, điều kiện và thời điểm tính rõ ràng; không xem đó là giá cuối cùng nếu chính sách chưa xác nhận.
+- DIRECT/PARTNER dùng chung nền tảng Web/Dispatch nhưng Booking, hợp đồng, doanh thu, công nợ và đối soát phải gắn đúng đơn vị sở hữu.
+- Các tham số [xxx]/[xx km], phương thức thanh toán và chính sách năm 2015 phải được cấu hình, phê duyệt; không hard-code.
+
+### 8.10. Điểm chưa nhất quán / cần đối chiếu trong tài liệu nguồn
+
+1. TO.P7.11 có tên “Hủy yêu cầu qua web hoặc tin nhắn?” nhưng mô tả khách gửi SMS theo cú pháp “HUY [Mã số đặt xe]”; TO.P7.12 mới ghi hệ thống nhận tin nhắn hoặc lệnh hủy từ Web. Cần xác nhận các kênh hủy được hỗ trợ thực tế.
+2. TO.P7.14 dẫn chiếu quay lại TO.P5.11 và khi chấp nhận chuyển TO.P5.18; đây là tham chiếu sang quy trình SMS, có khả năng là lỗi sao chép. Không tự sửa mã nguồn trong tài liệu.
+3. TO.P7.22 dẫn sang TO.P5.24/TO.P5.23 thay vì các bước TO.P7.25/TO.P7.23 tương ứng trong quy trình Web.
+4. TO.P7.24 dẫn hủy về TO.P5.17 và khách tiếp tục chờ sang TO.P5.25; các tham chiếu này thuộc quy trình SMS và cần xác nhận.
+5. TO.P7.10 mô tả chọn kênh thông báo dựa vào phương thức yêu cầu SMS, email, Chat, Web; cần làm rõ khách Web nhận thông báo trong tài khoản, qua email, SMS hay nhiều kênh.
+6. TO.P7.15–P7.16 có hai bước quyết định/thông báo liên tiếp; ngưỡng chỉ định [xxx] và thời gian [xxx] kể từ lần gọi cuối cần xác định rõ cách tính.
+7. TO.P7.20 ghi tài xế có thể hủy nhận chỉ định sau khi đồng ý; cần làm rõ trạng thái Assignment và thời điểm khóa tài xế.
+8. TO.P7.25 có nhánh mã đặt chỗ không khớp/đón nhầm; cần phân biệt hủy đăng ký xe, hủy Assignment và hủy Booking.
+9. KPMG 2015 liệt kê các phương thức thanh toán và cách xuất chứng từ lịch sử; không mặc định là phương thức đang áp dụng.
+
+### 8.11. Tiêu chí hoàn thành TO.P7
+
+1. Chốt tài khoản Web, xác thực, đăng nhập và quyền xem Booking.
+2. Chốt trường dữ liệu, định vị điểm đón/điểm đến và quy tắc thời gian đón.
+3. Chốt thời điểm sinh mã đặt chỗ, xác nhận, sửa và hủy Booking.
+4. Chốt cơ chế theo dõi trạng thái Booking trên tài khoản khách.
+5. Chốt kênh thông báo đa kênh và cách chọn kênh theo nguồn yêu cầu.
+6. Chốt Unicast/Broadcast, bán kính, đăng ký, chỉ định, từ chối và giải phóng xe.
+7. Chốt quy tắc khách chờ lâu, gọi nhắc, khách không có mặt và xác minh mã đặt chỗ.
+8. Chốt biểu giá, thanh toán, đánh giá và phân tách DIRECT/PARTNER.
+9. Có test case cho đăng ký Web, xác thực tài khoản, dữ liệu sai, định vị lỗi, xác nhận/sửa/hủy, đặt trước, thông báo đa kênh, SMS hủy, tài xế từ chối/hủy đăng ký, khách gọi nhắc, sai mã, đón nhầm, Trip, hóa đơn và thanh toán.
+
+## 9. Tiêu chí hoàn thành một quy trình
 
 Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặc tả tính năng khi:
 1. Có chủ quy trình và các vai trò tham gia được xác nhận.
@@ -1270,16 +1508,16 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 6. Có truy vết về yêu cầu nguồn KPMG và quyết định hiện hành.
 7. Có kịch bản kiểm thử và tiêu chí nghiệm thu.
 
-## 9. Trình tự tiếp tục
+## 10. Trình tự tiếp tục
 
 - Hoàn thiện TO.P1 sau khi kiểm tra lưu đồ gốc và xác nhận chính sách hiện tại.
 - Rà soát TO.P1–TO.P5 với nghiệp vụ hiện hành.
-- Đặc tả TO.P7 — Web.
+- Đặc tả TO.P8 — đặt xe trước.
 - Đặc tả TO.P8 — đặt xe trước.
 - Đặc tả TO.P9 — cước phí đường dài.
 - Sau khi hoàn tất 9 quy trình, xây dựng bộ State Machine và ERD tổng thể dựa trên luồng đã xác nhận.
 
-## 10. Lịch sử phiên bản
+## 11. Lịch sử phiên bản
 
 | Phiên bản | Ngày | Nội dung | Trạng thái |
 |---|---|---|---|
@@ -1287,4 +1525,4 @@ Một quy trình chỉ được xem là đủ điều kiện chuyển sang đặ
 | 0.2 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P2 — khách hàng sử dụng ứng dụng | Đang rà soát |
 | 0.3 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P3 — khách yêu cầu tại Điểm tiếp thị | Đang rà soát |
 | 0.4 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P4 — khách yêu cầu tại Khu vực sắp tài không có nhân viên điều hành điểm | Đang rà soát |
-| 0.5 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P5 — khách hàng yêu cầu Taxi qua SMS | Đang rà soát |\n| 0.6 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P6 — khách hàng yêu cầu Taxi qua Chat | Đang rà soát |
+| 0.5 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P5 — khách hàng yêu cầu Taxi qua SMS | Đang rà soát |\n| 0.6 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P6 — khách hàng yêu cầu Taxi qua Chat | Đang rà soát |\n| 0.7 | 2026-11-14 | Bổ sung đặc tả bản đầu TO.P7 — khách hàng yêu cầu Taxi qua Web | Đang rà soát |
